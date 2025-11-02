@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import productsRouter from './routes/products'
@@ -28,6 +29,8 @@ async function start() {
   }
 
   const app = express()
+  // Enable CORS for local development. Adjust origin in production.
+  app.use(cors({ origin: process.env.CORS_ORIGIN || true }))
   app.use(express.json())
 
   app.get('/health', (_req, res) => {

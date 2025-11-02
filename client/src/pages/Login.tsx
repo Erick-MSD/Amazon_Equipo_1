@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logoSvg from "../assets/img/Amazon_logo.svg";
 
 type LoginResponse = {
@@ -13,6 +13,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const validate = () => {
     if (!email || !password) {
@@ -34,17 +35,20 @@ const Login: React.FC = () => {
     if (!validate()) return;
     setLoading(true);
 
+    const base = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000'
+
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(`${base}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        // backend expects field 'contraseña'
+        body: JSON.stringify({ email, contraseña: password }),
       });
 
       const data: LoginResponse = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Error en la autenticación. Revisa tus credenciales.");
+        setError((data as any).error || (data as any).message || "Error en la autenticación. Revisa tus credenciales.");
         setLoading(false);
         return;
       }
@@ -59,8 +63,12 @@ const Login: React.FC = () => {
         } catch (_) {}
       }
 
-      // redirección post-login
-      window.location.href = "/";
+      // redirección post-login (SPA)
+      try {
+        navigate('/');
+      } catch {
+        window.location.href = '/';
+      }
     } catch (err) {
       console.error(err);
       setError("No se pudo conectar con el servidor. Intenta de nuevo más tarde.");
