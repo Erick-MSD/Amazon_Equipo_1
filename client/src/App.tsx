@@ -1,10 +1,16 @@
 import React from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
+import Login from './pages/Login'
+import Home from './pages/Home'
+import logoSvg from './assets/img/Amazon_logo.svg'
 
 export default function App() {
   return (
-    <div className="app">
-      <h1>Amazon Equipo 1 — Frontend</h1>
-      <p>Página inicial. Enlaza con la API del servidor para listar productos.</p>
+    <div className="app-wrapper">
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/Login" element={<Login/>} />
+      </Routes>
     </div>
   )
 }
