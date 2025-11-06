@@ -27,13 +27,13 @@ const Home: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="amazon-logo">
             <img src={logoSvg} alt="Amazon" />
-            <span className="amazon-logo-com">.es</span>
+            <span className="amazon-logo-com">.com.mx</span>
           </Link>
 
           {/* Deliver to */}
           <div className="amazon-deliver">
             <div className="amazon-deliver-line1">Entregar en</div>
-            <div className="amazon-deliver-line2">📍 España 12345</div>
+            <div className="amazon-deliver-line2">📍 México 01000</div>
           </div>
 
           {/* Search Bar */}
@@ -54,7 +54,7 @@ const Home: React.FC = () => {
 
           {/* Language */}
           <div className="amazon-language">
-            🇪🇸 <span>ES</span>
+            🇲🇽 <span>ES</span>
           </div>
 
           {/* Account */}
