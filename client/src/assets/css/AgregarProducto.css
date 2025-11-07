@@ -1,0 +1,124 @@
+/* --- Formulario Agregar Producto --- */
+.form-wrapper {
+  max-width: 500px;
+  margin: 50px auto;
+  padding: 40px 30px;
+  background-color: #ffffff; /* Fondo blanco */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: "Amazon Ember", Arial, sans-serif;
+  text-align: center;
+}
+
+/* --- Logo Amazon arriba --- */
+.form-wrapper img {
+  max-width: 120px;
+  margin-bottom: 20px;
+}
+
+/* --- Título --- */
+.form-wrapper h2 {
+  color: #131921; /* Azul oscuro Amazon */
+  margin-bottom: 25px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* --- Inputs --- */
+.form-wrapper input,
+.form-wrapper textarea {
+  width: 100%;
+  padding: 12px 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-wrapper input:focus,
+.form-wrapper textarea:focus {
+  border-color: #f90; /* Amarillo Amazon */
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+}
+
+/* --- Sección de imágenes --- */
+.image-fields {
+  margin-bottom: 15px;
+}
+
+.image-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.image-field input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.remove-image-btn {
+  margin-left: 5px;
+  padding: 8px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-image-btn {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+/* --- Botón --- */
+.form-wrapper button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #f0c14b; /* Amarillo Amazon */
+  border: 1px solid #a88734;
+  border-radius: 3px;
+  color: #111;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.form-wrapper button[type="submit"]:hover:not(:disabled) {
+  background-color: #e2b33c;
+}
+
+.form-wrapper button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Mensajes de alerta --- */
+.alert {
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 3px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
