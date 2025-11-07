@@ -9,7 +9,7 @@ export default function RegistroCliente() {
   const [password, setPassword] = useState("");
   const [direccion, setDireccion] = useState("");
 
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = (import.meta as any).env.VITE_API_URL as string;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
