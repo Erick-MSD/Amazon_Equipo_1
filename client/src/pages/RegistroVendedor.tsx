@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import '../assets/css/Formularios.css';
 import logoSvg from '../assets/img/Amazon_logo.svg';
 
@@ -40,7 +41,11 @@ export default function RegistroVendedor() {
 
   return (
     <div className="form-wrapper">
-      <img src={logoSvg} alt="Amazon Logo" />
+      {/* Logo clickeable que lleva al Home */}
+      <Link to="/">
+        <img src={logoSvg} alt="Amazon Logo" className="logo-clickable" />
+      </Link>
+
       <h2>Registro de Vendedor</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Nombre completo" value={nombre} onChange={(e) => setNombre(e.target.value)} required />

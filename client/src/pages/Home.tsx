@@ -11,7 +11,7 @@ const Home: React.FC = () => {
             <img src={logoSvg} alt="Amazon" className="header-logo" />
           </Link>
           <nav className="header-nav">
-            <Link to="/Login" className="nav-link">Iniciar sesión</Link>
+            <Link to="/login" className="nav-link">Iniciar sesión</Link>
           </nav>
         </div>
       </header>
@@ -19,7 +19,12 @@ const Home: React.FC = () => {
       <main className="home-main">
         <div className="home-content fade-in">
           <h2 className="text-2xl font-semibold mb-4">Bienvenido a Amazon Equipo 1</h2>
-          <p className="text-sm text-gray-600">Página principal. Aquí se listarán los productos desde la API.</p>
+          <p className="text-sm text-gray-600 mb-6">Selecciona cómo deseas registrarte:</p>
+
+          <div className="register-options">
+            <Link to="/registro-cliente" className="btn-register">Registrarse como Cliente</Link>
+            <Link to="/registro-vendedor" className="btn-register">Registrarse como Vendedor</Link>
+          </div>
         </div>
       </main>
 
@@ -38,3 +43,4 @@ const Home: React.FC = () => {
 }
 
 export default Home
+

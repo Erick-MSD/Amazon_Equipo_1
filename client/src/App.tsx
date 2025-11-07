@@ -10,7 +10,8 @@ export default function App() {
   return (
     <div className="app-wrapper">
       {/* Navegación superior */}
-      <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
+      <nav style={{ display: "flex", gap: "20px", padding: "10px", alignItems: "center" }}>
+        <img src={logoSvg} alt="Amazon" style={{ height: "30px" }} />
         <Link to="/">Inicio</Link>
         <Link to="/login">Login</Link>
         <Link to="/registro-cliente">Registro Cliente</Link>
