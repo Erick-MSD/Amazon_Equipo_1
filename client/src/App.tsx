@@ -9,15 +9,6 @@ import logoSvg from './assets/img/Amazon_logo.svg'
 export default function App() {
   return (
     <div className="app-wrapper">
-      {/* Navegación superior */}
-      <nav style={{ display: "flex", gap: "20px", padding: "10px", alignItems: "center" }}>
-        <img src={logoSvg} alt="Amazon" style={{ height: "30px" }} />
-        <Link to="/">Inicio</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/registro-cliente">Registro Cliente</Link>
-        <Link to="/registro-vendedor">Registro Vendedor</Link>
-      </nav>
-
       {/* Rutas principales */}
       <Routes>
         <Route path="/" element={<Home />} />

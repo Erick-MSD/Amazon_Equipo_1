@@ -20,11 +20,6 @@ const Home: React.FC = () => {
         <div className="home-content fade-in">
           <h2 className="text-2xl font-semibold mb-4">Bienvenido a Amazon Equipo 1</h2>
           <p className="text-sm text-gray-600 mb-6">Selecciona cómo deseas registrarte:</p>
-
-          <div className="register-options">
-            <Link to="/registro-cliente" className="btn-register">Registrarse como Cliente</Link>
-            <Link to="/registro-vendedor" className="btn-register">Registrarse como Vendedor</Link>
-          </div>
         </div>
       </main>
 
