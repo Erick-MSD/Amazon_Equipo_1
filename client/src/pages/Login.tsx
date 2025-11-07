@@ -20,7 +20,6 @@ const Login: React.FC = () => {
       setError("Por favor completa email y contraseña.");
       return false;
     }
-    // simple email regex
     const re = /\S+@\S+\.\S+/;
     if (!re.test(email)) {
       setError("Ingresa un correo electrónico válido.");
@@ -35,13 +34,12 @@ const Login: React.FC = () => {
     if (!validate()) return;
     setLoading(true);
 
-    const base = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000'
+    const base = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000';
 
     try {
       const res = await fetch(`${base}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // backend expects field 'contraseña'
         body: JSON.stringify({ email, contraseña: password }),
       });
 
@@ -53,22 +51,10 @@ const Login: React.FC = () => {
         return;
       }
 
-      // guardar token y user si vienen
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-      if (data.user) {
-        try {
-          localStorage.setItem("user", JSON.stringify(data.user));
-        } catch (_) {}
-      }
+      if (data.token) localStorage.setItem("token", data.token);
+      if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
-      // redirección post-login (SPA)
-      try {
-        navigate('/');
-      } catch {
-        window.location.href = '/';
-      }
+      navigate('/');
     } catch (err) {
       console.error(err);
       setError("No se pudo conectar con el servidor. Intenta de nuevo más tarde.");
@@ -124,22 +110,22 @@ const Login: React.FC = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              className="btn-login"
-              disabled={loading}
-            >
+            <button type="submit" className="btn-login" disabled={loading}>
               {loading ? "Ingresando..." : "Ingresar"}
             </button>
           </form>
 
           <div className="login-divider">
-            <span>O Sing Up</span>
+            {/* Aquí el texto “Sign Up” ahora tiene redirección */}
+            <span>
+              O <Link to="/registro-cliente" className="link-signup">Sign Up</Link>
+            </span>
           </div>
 
           <div className="business-section">
             <h3>Buying for work?</h3>
-            <Link to="/register?type=seller" className="link-business">
+            {/* Este lleva al registro de vendedor */}
+            <Link to="/registro-vendedor" className="link-business">
               Create a free business account
             </Link>
           </div>
