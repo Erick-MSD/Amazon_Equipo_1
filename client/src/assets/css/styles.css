@@ -1,9 +1,19 @@
+/* ===========================================
+   ARCHIVO CSS PRINCIPAL - ESTILOS DE AMAZON
+   ===========================================
+   Este archivo contiene todos los estilos globales y específicos
+   para las páginas de Amazon, incluyendo login, home y componentes.
+   Utiliza Tailwind CSS y variables CSS personalizadas.
+*/
+
+/* Directivas de Tailwind CSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Variables CSS globales */
 :root {
-  --bg: #FFFCF8;
+  --bg: #f6f5f2;
   --orange: #FF9900;
   --amazon-blue: #131A22;
   --text: #1f2937;
@@ -23,7 +33,7 @@ body {
   font-family: "Amazon Ember", Arial, sans-serif !important;
   margin: 0;
   padding: 0;
-  background-color: #eaeded !important;
+  background-color: #fff !important;
   color: var(--text);
 }
 
@@ -523,7 +533,7 @@ body {
 
 /* Main Content */
 .amazon-main {
-  background-color: #eaeded;
+  background-color: #f6f5f2;
   padding: 20px 0;
 }
 

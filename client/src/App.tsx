@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import Login from './pages/Login'
 import Home from './pages/Home'
+import HomeVendedor from './pages/HomeVendedor'
 import RegistroCliente from './pages/RegistroCliente'
 import RegistroVendedor from './pages/RegistroVendedor'
 import AgregarProducto from './pages/AgregarProducto'
@@ -17,6 +18,7 @@ export default function App() {
         <Link to="/login">Login</Link>
         <Link to="/registro-cliente">Registro Cliente</Link>
         <Link to="/registro-vendedor">Registro Vendedor</Link>
+        <Link to="/home-vendedor">Home Vendedor</Link>
         <Link to="/add-product">Agregar Producto</Link>
       </nav>
 
@@ -26,6 +28,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registro-cliente" element={<RegistroCliente />} />
         <Route path="/registro-vendedor" element={<RegistroVendedor />} />
+        <Route path="/home-vendedor" element={<HomeVendedor />} />
         <Route path="/add-product" element={<AgregarProducto />} />
       </Routes>
     </div>
