@@ -5,11 +5,12 @@ import Home from './pages/Home'
 import RegistroCliente from './pages/RegistroCliente'
 import RegistroVendedor from './pages/RegistroVendedor'
 import AgregarProducto from './pages/AgregarProducto'
+import Checkout from './pages/Checkout'
+import EligeUbicacion from './pages/EligeUbicacion' // ⬅️ NUEVO
 import logoSvg from './assets/img/Amazon_logo.svg'
 
 export default function App() {
   return (
-
     <div className="app-wrapper">
       {/* Navegación superior */}
       <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
@@ -18,6 +19,7 @@ export default function App() {
         <Link to="/registro-cliente">Registro Cliente</Link>
         <Link to="/registro-vendedor">Registro Vendedor</Link>
         <Link to="/add-product">Agregar Producto</Link>
+        <Link to="/checkout">Checkout</Link> {/* SOLO PARA PRUEBAS */}
       </nav>
 
       {/* Rutas principales */}
@@ -27,6 +29,10 @@ export default function App() {
         <Route path="/registro-cliente" element={<RegistroCliente />} />
         <Route path="/registro-vendedor" element={<RegistroVendedor />} />
         <Route path="/add-product" element={<AgregarProducto />} />
+        <Route path="/checkout" element={<Checkout />} />
+
+        {/* NUEVA RUTA */}
+        <Route path="/elige-ubicacion" element={<EligeUbicacion />} />
       </Routes>
     </div>
   )
