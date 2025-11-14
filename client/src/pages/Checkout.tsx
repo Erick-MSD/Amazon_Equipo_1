@@ -9,7 +9,7 @@ export default function Checkout() {
 
       <p><strong>Dirección de envío:</strong> {direccion}</p>
 
-      <p>Aquí tus compañeros agregarán el resumen del carrito y el pago más adelante.</p>
+    
     </div>
   );
 }
