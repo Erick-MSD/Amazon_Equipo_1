@@ -9,7 +9,7 @@ const AgregarProducto: React.FC = () => {
   const [precio, setPrecio] = useState("");
   const [stock, setStock] = useState("");
   const [categoria, setCategoria] = useState("");
-  const [imagenes, setImagenes] = useState<string[]>([""]);
+  const [imagenes, setImagenes] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -17,21 +17,25 @@ const AgregarProducto: React.FC = () => {
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
   
-  const handleImageChange = (index: number, value: string) => {
-    const newImagenes = [...imagenes];
-    newImagenes[index] = value;
-    setImagenes(newImagenes);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      // Validar que sean JPG o PNG
+      const validFiles = filesArray.filter(file => {
+        const isValid = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isValid) {
+          setError(`${file.name} no es JPG ni PNG`);
+        }
+        return isValid;
+      });
+      setImagenes(prev => [...prev, ...validFiles]);
+      setError(null);
+    }
   };
 
   
-  const addImageField = () => {
-    setImagenes([...imagenes, ""]);
-  };
-
-  
-  const removeImageField = (index: number) => {
-    const newImagenes = imagenes.filter((_, i) => i !== index);
-    setImagenes(newImagenes);
+  const removeImage = (index: number) => {
+    setImagenes(prev => prev.filter((_, i) => i !== index));
   };
 
   
@@ -56,9 +60,32 @@ const AgregarProducto: React.FC = () => {
     setLoading(true);
 
     try {
-      
-      const filteredImagenes = imagenes.filter(img => img.trim() !== "");
-      
+      let imageUrls: string[] = [];
+
+      // Subir imágenes si existen
+      if (imagenes.length > 0) {
+        const formData = new FormData();
+        imagenes.forEach(file => {
+          formData.append('images', file);
+        });
+
+        const uploadResponse = await fetch(`${API_URL}/api/upload/multiple`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('Error subiendo imágenes');
+        }
+
+        const uploadData = await uploadResponse.json();
+        imageUrls = uploadData.urls.map((url: string) => `${API_URL}${url}`);
+      }
+
+      // Crear el producto
       const response = await fetch(`${API_URL}/api/products`, {
         method: "POST",
         headers: {
@@ -70,7 +97,7 @@ const AgregarProducto: React.FC = () => {
           descripcion: descripcion || undefined,
           precio: parseFloat(precio),
           stock: parseInt(stock) || 0,
-          imagenes: filteredImagenes,
+          imagenes: imageUrls,
           categoriaId: categoria || undefined,
         }),
       });
@@ -83,8 +110,8 @@ const AgregarProducto: React.FC = () => {
         setPrecio("");
         setStock("");
         setCategoria("");
-        setImagenes([""]);
-        navigate("/");
+        setImagenes([]);
+        navigate("/home-vendedor");
       } else {
         const data = await response.json();
         setError("❌ Error: " + (data.message || "Error al agregar producto"));
@@ -141,35 +168,37 @@ const AgregarProducto: React.FC = () => {
           onChange={(e) => setCategoria(e.target.value)}
         />
 
-        {/* Sección para manejar múltiples URLs de imágenes */}
+        {/* Sección para subir imágenes JPG/PNG */}
         <div className="image-fields">
-          <label>URLs de Imágenes (opcional):</label>
-          {imagenes.map((img, index) => (
-            <div key={index} className="image-field">
-              <input
-                type="url"
-                placeholder="https://ejemplo.com/imagen.jpg"
-                value={img}
-                onChange={(e) => handleImageChange(index, e.target.value)}
-              />
-              {imagenes.length > 1 && (
-                <button
-                  type="button"
-                  className="remove-image-btn"
-                  onClick={() => removeImageField(index)}
-                >
-                  ✕
-                </button>
-              )}
+          <label>Imágenes del Producto (JPG o PNG):</label>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png"
+            multiple
+            onChange={handleImageChange}
+            className="file-input"
+          />
+          {imagenes.length > 0 && (
+            <div className="image-preview-list">
+              {imagenes.map((file, index) => (
+                <div key={index} className="image-preview-item">
+                  <img 
+                    src={URL.createObjectURL(file)} 
+                    alt={`Preview ${index}`}
+                    className="image-preview-thumb"
+                  />
+                  <span className="image-preview-name">{file.name}</span>
+                  <button
+                    type="button"
+                    className="remove-image-btn"
+                    onClick={() => removeImage(index)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
             </div>
-          ))}
-          <button
-            type="button"
-            className="add-image-btn"
-            onClick={addImageField}
-          >
-            + Agregar Imagen
-          </button>
+          )}
         </div>
 
         {/* Mostrar mensaje de error si existe */}

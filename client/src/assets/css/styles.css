@@ -428,6 +428,9 @@ body {
   text-decoration: none;
   display: flex;
   align-items: center;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .amazon-cart:hover {

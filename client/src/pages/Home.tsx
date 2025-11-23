@@ -1,9 +1,36 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
+import CartSidebar from '../components/CartSidebar'
 
 const Home: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [userName, setUserName] = useState<string>('Identifícate')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const navigate = useNavigate()
+
+  // Obtener el nombre del usuario desde localStorage
+  useEffect(() => {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr)
+        if (user.nombre) {
+          setUserName(user.nombre)
+        }
+      } catch (err) {
+        console.error('Error parsing user data:', err)
+      }
+    }
+  }, [])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
 
   const slides = [
     'https://m.media-amazon.com/images/I/61jovjd+f9L._SX3000_.jpg',
@@ -37,7 +64,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="amazon-search">
+          <form className="amazon-search" onSubmit={handleSearch}>
             <select>
               <option>Todos</option>
               <option>Arte y Manualidades</option>
@@ -48,9 +75,14 @@ const Home: React.FC = () => {
               <option>Computadoras</option>
               <option>Electrónicos</option>
             </select>
-            <input type="text" placeholder="Buscar en Amazon" />
-            <button>🔍</button>
-          </div>
+            <input 
+              type="text" 
+              placeholder="Buscar en Amazon" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit">🔍</button>
+          </form>
 
           {/* Language */}
           <div className="amazon-language">
@@ -59,7 +91,7 @@ const Home: React.FC = () => {
 
           {/* Account */}
           <Link to="/login" className="amazon-account">
-            <div className="amazon-account-line1">Hola, Identifícate</div>
+            <div className="amazon-account-line1">Hola, {userName}</div>
             <div className="amazon-account-line2">Cuenta y Listas</div>
           </Link>
 
@@ -70,10 +102,10 @@ const Home: React.FC = () => {
           </Link>
 
           {/* Cart */}
-          <Link to="/cart" className="amazon-cart">
+          <button onClick={() => setIsCartOpen(true)} className="amazon-cart">
             <div className="amazon-cart-icon">🛒</div>
-            <div className="amazon-cart-text">Cesta</div>
-          </Link>
+            <div className="amazon-cart-text">Carrito</div>
+          </button>
         </div>
 
         {/* Navigation Bar */}
@@ -301,6 +333,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Cart Sidebar */}
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   )
 }

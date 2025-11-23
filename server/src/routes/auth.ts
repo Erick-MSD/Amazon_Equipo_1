@@ -74,4 +74,46 @@ router.post('/RegistroVendedor', async (req, res) => {
   }
 });
 
+// ================================
+// Login
+// POST /api/auth/login
+// ================================
+router.post('/login', async (req, res) => {
+  try {
+    const { email, contraseña } = req.body;
+
+    if (!email || !contraseña) {
+      return res.status(400).json({ message: 'Email y contraseña son requeridos' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
+
+    const isMatch = await user.comparePassword(contraseña);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
+
+    const payload = { id: user._id, email: user.email, rol: user.rol };
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '7d' });
+
+    // Retornar info del usuario incluyendo nombre y rol
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        rol: user.rol,
+        nombreTienda: user.rol === 'vendedor' ? user.vendedorInfo?.nombreTienda : undefined
+      }
+    });
+  } catch (err) {
+    console.error('Error en login', err);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+});
+
 export default router;

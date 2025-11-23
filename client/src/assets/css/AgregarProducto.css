@@ -47,6 +47,60 @@
 /* --- Sección de imágenes --- */
 .image-fields {
   margin-bottom: 15px;
+  text-align: left;
+}
+
+.image-fields label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #131921;
+}
+
+.file-input {
+  width: 100%;
+  padding: 8px;
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.file-input:hover {
+  border-color: #f90;
+}
+
+.image-preview-list {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.image-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.image-preview-thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.image-preview-name {
+  flex: 1;
+  font-size: 13px;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .image-field {
@@ -61,14 +115,18 @@
 }
 
 .remove-image-btn {
-  margin-left: 5px;
-  padding: 8px;
+  padding: 6px 10px;
   background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 3px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.remove-image-btn:hover {
+  background-color: #c82333;
 }
 
 .add-image-btn {

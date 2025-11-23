@@ -1,11 +1,37 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
+import CartSidebar from '../components/CartSidebar'
 import '../assets/css/styles.css'
 import '../assets/css/style-vendedor.css'
 
 const HomeVendedor: React.FC = () => {
+  const [vendorName, setVendorName] = useState<string>('Vendedor')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const navigate = useNavigate()
 
+  // Obtener el nombre del vendedor desde localStorage
+  useEffect(() => {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr)
+        if (user.nombre) {
+          setVendorName(user.nombre)
+        }
+      } catch (err) {
+        console.error('Error parsing user data:', err)
+      }
+    }
+  }, [])
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
 
   return (
     <div>
@@ -26,16 +52,21 @@ const HomeVendedor: React.FC = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="amazon-search">
+          <form className="amazon-search" onSubmit={handleSearch}>
             <select title="Buscar en">
               <option>Productos</option>
               <option>Pedidos</option>
               <option>Informes</option>
               <option>Promociones</option>
             </select>
-            <input type="text" placeholder="Buscar en Seller Central" />
-            <button>🔍</button>
-          </div>
+            <input 
+              type="text" 
+              placeholder="Buscar en Seller Central" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit">🔍</button>
+          </form>
 
           {/* Language */}
           <div className="amazon-language">
@@ -44,7 +75,7 @@ const HomeVendedor: React.FC = () => {
 
           {/* Account */}
           <Link to="/login" className="amazon-account">
-            <div className="amazon-account-line1">Hola, Vendedor</div>
+            <div className="amazon-account-line1">Hola, {vendorName}</div>
             <div className="amazon-account-line2">Cuenta de Vendedor</div>
           </Link>
 
@@ -171,7 +202,7 @@ const HomeVendedor: React.FC = () => {
             {/* Quick Actions */}
             <div className="amazon-signin-card">
               <h2>Acciones Rápidas</h2>
-              <Link to="/agregar-producto" className="amazon-signin-btn">
+              <Link to="/add-product" className="amazon-signin-btn">
                 Agregar Producto
               </Link>
               <div className="amazon-signin-text">
@@ -261,6 +292,9 @@ const HomeVendedor: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Cart Sidebar */}
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   )
 }

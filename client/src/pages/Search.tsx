@@ -82,6 +82,31 @@ const Search: React.FC = () => {
     setFilters({ categoria: [], precioMin: 0, precioMax: 10000 })
   }
 
+  const addToCart = (product: Product) => {
+    const cartData = localStorage.getItem('cart')
+    let cart = cartData ? JSON.parse(cartData) : []
+    
+    // Verificar si el producto ya está en el carrito
+    const existingIndex = cart.findIndex((item: any) => item.id === product._id)
+    
+    if (existingIndex >= 0) {
+      // Incrementar cantidad
+      cart[existingIndex].cantidad += 1
+    } else {
+      // Agregar nuevo producto
+      cart.push({
+        id: product._id,
+        nombre: product.titulo,
+        precio: product.precio,
+        cantidad: 1,
+        imagen: product.imagenes?.[0]
+      })
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart))
+    alert('✅ Producto agregado al carrito')
+  }
+
   return (
     <div className="search-page">
       {/* Header */}
@@ -195,6 +220,12 @@ const Search: React.FC = () => {
                       ${product.precio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                     </div>
                     <div className="product-tag">{product.categoria}</div>
+                    <button 
+                      onClick={() => addToCart(product)}
+                      className="add-to-cart-btn"
+                    >
+                      Agregar al carrito
+                    </button>
                   </div>
                 </div>
               ))}
