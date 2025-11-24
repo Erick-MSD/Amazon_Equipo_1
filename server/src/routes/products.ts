@@ -27,6 +27,9 @@ router.get('/', async (req, res) => {
 router.post('/', requireAuth, requireRole('vendedor'), async (req, res) => {
   try {
     const { nombre, descripcion, precio, stock, imagenes, categoriaId } = req.body
+    
+    console.log('📦 Creando producto:', { nombre, precio, stock, imagenes })
+    
     if (!nombre || typeof precio === 'undefined') {
       return res.status(400).json({ message: 'nombre y precio son requeridos' })
     }
@@ -34,9 +37,13 @@ router.post('/', requireAuth, requireRole('vendedor'), async (req, res) => {
     const payload = (req as any).user
     const vendedorId = payload?.id
 
+    if (!vendedorId) {
+      return res.status(401).json({ message: 'Usuario no autenticado' })
+    }
+
     const product = new Product({
       nombre,
-      descripcion,
+      descripcion: descripcion || '',
       precio: Number(precio),
       stock: Number(stock) || 0,
       imagenes: Array.isArray(imagenes) ? imagenes : [],
@@ -45,10 +52,11 @@ router.post('/', requireAuth, requireRole('vendedor'), async (req, res) => {
     })
 
     await product.save()
+    console.log('✅ Producto creado:', product._id)
     res.status(201).json(product)
   } catch (err) {
-    console.error('Error creating product', err)
-    res.status(500).json({ message: 'Error creando producto' })
+    console.error('❌ Error creating product:', err)
+    res.status(500).json({ message: 'Error creando producto', error: String(err) })
   }
 })
 

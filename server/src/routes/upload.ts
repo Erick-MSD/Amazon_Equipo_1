@@ -61,16 +61,23 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
 // POST /api/upload/multiple - Subir múltiples imágenes
 router.post('/multiple', requireAuth, upload.array('images', 10), async (req, res) => {
   try {
+    console.log('📤 Recibiendo imágenes...')
+    
     if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+      console.log('❌ No se recibieron archivos')
       return res.status(400).json({ message: 'No se proporcionaron imágenes' })
     }
 
+    console.log(`✅ ${req.files.length} imágenes recibidas`)
+    
     // Retornar las URLs de todos los archivos
     const urls = req.files.map(file => `/uploads/${file.filename}`)
+    console.log('URLs generadas:', urls)
+    
     res.status(200).json({ urls })
   } catch (err) {
-    console.error('Error subiendo imágenes:', err)
-    res.status(500).json({ message: 'Error subiendo imágenes' })
+    console.error('❌ Error subiendo imágenes:', err)
+    res.status(500).json({ message: 'Error subiendo imágenes', error: String(err) })
   }
 })
 

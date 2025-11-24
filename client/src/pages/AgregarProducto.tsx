@@ -14,7 +14,7 @@ const AgregarProducto: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+  const API_URL = (import.meta as any).env.VITE_API_URL as string;
 
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +69,8 @@ const AgregarProducto: React.FC = () => {
           formData.append('images', file);
         });
 
+        console.log('📤 Subiendo imágenes al servidor...');
+
         const uploadResponse = await fetch(`${API_URL}/api/upload/multiple`, {
           method: "POST",
           headers: {
@@ -78,12 +80,20 @@ const AgregarProducto: React.FC = () => {
         });
 
         if (!uploadResponse.ok) {
-          throw new Error('Error subiendo imágenes');
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.message || 'Error subiendo imágenes');
         }
 
         const uploadData = await uploadResponse.json();
-        imageUrls = uploadData.urls.map((url: string) => `${API_URL}${url}`);
+        console.log('✅ Imágenes subidas:', uploadData);
+        
+        // Las URLs ya vienen con /uploads/, solo agregar el dominio si es necesario
+        imageUrls = uploadData.urls.map((url: string) => 
+          url.startsWith('http') ? url : `${API_URL}${url}`
+        );
       }
+
+      console.log('📦 Creando producto con imágenes:', imageUrls);
 
       // Crear el producto
       const response = await fetch(`${API_URL}/api/products`, {
@@ -102,7 +112,10 @@ const AgregarProducto: React.FC = () => {
         }),
       });
 
+      const responseData = await response.json();
+
       if (response.ok) {
+        console.log('✅ Producto creado:', responseData);
         alert("✅ Producto agregado correctamente");
         // Reset form
         setNombre("");
@@ -113,12 +126,12 @@ const AgregarProducto: React.FC = () => {
         setImagenes([]);
         navigate("/home-vendedor");
       } else {
-        const data = await response.json();
-        setError("❌ Error: " + (data.message || "Error al agregar producto"));
+        console.error('❌ Error del servidor:', responseData);
+        setError("❌ Error: " + (responseData.message || "Error al agregar producto"));
       }
     } catch (error) {
-      console.error("Error al conectar con el backend:", error);
-      setError("⚠️ No se pudo conectar con el servidor");
+      console.error("❌ Error al conectar con el backend:", error);
+      setError("⚠️ " + (error instanceof Error ? error.message : "No se pudo conectar con el servidor"));
     } finally {
       setLoading(false);
     }
