@@ -9,6 +9,8 @@ const HomeVendedor: React.FC = () => {
   const [vendorName, setVendorName] = useState<string>('Vendedor')
   const [searchQuery, setSearchQuery] = useState('')
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   // Obtener el nombre del vendedor desde localStorage
@@ -24,6 +26,33 @@ const HomeVendedor: React.FC = () => {
         console.error('Error parsing user data:', err)
       }
     }
+  }, [])
+
+  // Obtener los productos del vendedor
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const userStr = localStorage.getItem('user')
+        if (!userStr) return
+
+        const user = JSON.parse(userStr)
+        const vendedorId = user.id
+
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+        const response = await fetch(`${API_URL}/api/products?limit=100`)
+        const data = await response.json()
+
+        // Filtrar solo los productos de este vendedor
+        const vendorProducts = data.items.filter((p: any) => p.vendedorId === vendedorId)
+        setProducts(vendorProducts)
+      } catch (err) {
+        console.error('Error fetching products:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
   }, [])
 
   const handleSearch = (e: React.FormEvent) => {
@@ -228,6 +257,76 @@ const HomeVendedor: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Mis Productos */}
+          <div className="amazon-deals" style={{ marginTop: '30px' }}>
+            <h2>Mis Productos</h2>
+            {loading ? (
+              <p style={{ textAlign: 'center', padding: '20px' }}>Cargando productos...</p>
+            ) : products.length === 0 ? (
+              <p style={{ textAlign: 'center', padding: '20px' }}>
+                No tienes productos. <Link to="/add-product">Agregar tu primer producto</Link>
+              </p>
+            ) : (
+              <div className="amazon-deals-grid">
+                {products.map((product) => {
+                  const hasActiveDiscount = product.descuento?.activo && 
+                    new Date(product.descuento.fechaInicio) <= new Date() && 
+                    new Date(product.descuento.fechaFin) >= new Date()
+                  
+                  return (
+                    <div key={product._id} className="amazon-deal-item" style={{ position: 'relative' }}>
+                      {product.imagenes && product.imagenes[0] && (
+                        <img 
+                          src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${product.imagenes[0]}`}
+                          alt={product.nombre}
+                          style={{ width: '100%', height: '200px', objectFit: 'cover', marginBottom: '10px' }}
+                        />
+                      )}
+                      <div className="amazon-deal-title">{product.nombre}</div>
+                      <div style={{ marginTop: '5px' }}>
+                        {hasActiveDiscount ? (
+                          <>
+                            <span style={{ textDecoration: 'line-through', color: '#888', marginRight: '10px' }}>
+                              ${product.precioOriginal?.toFixed(2)}
+                            </span>
+                            <span style={{ color: '#B12704', fontSize: '1.2em', fontWeight: 'bold' }}>
+                              ${product.precio.toFixed(2)}
+                            </span>
+                            <span style={{ color: '#B12704', marginLeft: '5px', fontSize: '0.9em' }}>
+                              (-{product.descuento.porcentaje}%)
+                            </span>
+                          </>
+                        ) : (
+                          <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
+                            ${product.precio.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="amazon-deal-subtitle" style={{ marginTop: '5px' }}>
+                        Stock: {product.stock} unidades
+                      </div>
+                      <button
+                        onClick={() => navigate(`/edit-product/${product._id}`)}
+                        style={{
+                          marginTop: '10px',
+                          width: '100%',
+                          padding: '8px',
+                          backgroundColor: '#f0c14b',
+                          border: '1px solid #a88734',
+                          borderRadius: '3px',
+                          cursor: 'pointer',
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        Editar Producto
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
         </div>

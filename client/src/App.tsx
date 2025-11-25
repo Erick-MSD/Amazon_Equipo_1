@@ -7,6 +7,7 @@ import Search from './pages/Search'
 import RegistroCliente from './pages/RegistroCliente'
 import RegistroVendedor from './pages/RegistroVendedor'
 import AgregarProducto from './pages/AgregarProducto'
+import EditarProducto from './pages/EditarProducto'
 import Checkout from './pages/Checkout'
 import logoSvg from './assets/img/Amazon_logo.svg'
 
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/registro-vendedor" element={<RegistroVendedor />} />
         <Route path="/home-vendedor" element={<HomeVendedor />} />
         <Route path="/add-product" element={<AgregarProducto />} />
+        <Route path="/edit-product/:id" element={<EditarProducto />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </div>
