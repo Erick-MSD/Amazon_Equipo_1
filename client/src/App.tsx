@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import Login from './pages/Login'
 import Home from './pages/Home'
-import HomeVendedor from './pages/HomeVendedor'
+import Search from './pages/Search'
 import RegistroCliente from './pages/RegistroCliente'
 import RegistroVendedor from './pages/RegistroVendedor'
 import AgregarProducto from './pages/AgregarProducto'
@@ -15,6 +15,7 @@ export default function App() {
       {/* Navegación superior */}
       <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
         <Link to="/">Inicio</Link>
+        <Link to="/search">Búsqueda</Link>
         <Link to="/login">Login</Link>
         <Link to="/registro-cliente">Registro Cliente</Link>
         <Link to="/registro-vendedor">Registro Vendedor</Link>
@@ -25,6 +26,7 @@ export default function App() {
       {/* Rutas principales */}
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/search" element={<Search />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro-cliente" element={<RegistroCliente />} />
         <Route path="/registro-vendedor" element={<RegistroVendedor />} />
