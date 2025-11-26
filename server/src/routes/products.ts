@@ -4,7 +4,7 @@ import { requireAuth, requireRole } from '../middleware/auth'
 
 const router = Router()
 
-// GET /api/products
+
 router.get('/', async (req, res) => {
   try {
     const page = Math.max(1, parseInt((req.query.page as string) || '1', 10))
@@ -41,11 +41,17 @@ router.get('/', async (req, res) => {
         .populate('vendedorId', 'nombre vendedorInfo.nombreTienda')
         .lean(),
       Product.countDocuments(filter)
+      Product.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Product.countDocuments()
     ])
 
     res.json({ page, limit, total, items })
   } catch (err) {
-    console.error('Error listing products', err)
+    console.error('Error listando productos', err)
     res.status(500).json({ message: 'Error listando productos' })
   }
 })
@@ -65,7 +71,31 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// POST /api/products (solo vendedores)
+
+router.get('/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id)
+      .populate({
+        path: 'reseñas',
+        populate: {
+          path: 'usuarioId',
+          select: 'nombre apellido'
+        }
+      })
+      .lean()
+
+    if (!product) {
+      return res.status(404).json({ message: 'Producto no encontrado' })
+    }
+
+    res.json(product)
+  } catch (err) {
+    console.error('Error obteniendo producto', err)
+    res.status(500).json({ message: 'Error obteniendo producto' })
+  }
+})
+
+
 router.post('/', requireAuth, requireRole('vendedor'), async (req, res) => {
   try {
     const { nombre, descripcion, precio, stock, imagenes, categoriaId } = req.body
@@ -174,8 +204,9 @@ router.put('/:id', requireAuth, requireRole('vendedor'), async (req, res) => {
   } catch (err) {
     console.error('❌ Error updating product:', err)
     res.status(500).json({ message: 'Error actualizando producto', error: String(err) })
+    console.error('Error creando producto', err)
+    res.status(500).json({ message: 'Error creando producto' })
   }
 })
 
 export default router
-

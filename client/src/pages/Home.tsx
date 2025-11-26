@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import resolveImg from '../utils/resolveImg'
 import { Link, useNavigate } from 'react-router-dom'
+import resolveImg from '../utils/resolveImg'
 import logoSvg from '../assets/img/Amazon_logo.svg'
 import CartSidebar from '../components/CartSidebar'
 import Header from '../components/Header'
 
 const Home: React.FC = () => {
+  const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
   const [suggestions, setSuggestions] = useState<string[]>([])
@@ -39,11 +40,21 @@ const Home: React.FC = () => {
     'https://m.media-amazon.com/images/I/71U-Q+N7PXL._SX3000_.jpg'
   ]
 
+  const [direccionDisplay, setDireccionDisplay] = useState("México 01000")
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length)
     }, 4000)
     return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    // Leer dirección guardada en localStorage (si existe)
+    const guardada = localStorage.getItem("direccion_envio")
+    if (guardada) {
+      setDireccionDisplay(guardada)
+    }
   }, [])
 
   // Fetch offers from backend
@@ -83,10 +94,14 @@ const Home: React.FC = () => {
             <span className="amazon-logo-com">.com.mx</span>
           </Link>
 
-          {/* Deliver to */}
-          <div className="amazon-deliver">
+          {/* Deliver to — AHORA CLICKEABLE */}
+          <div
+            className="amazon-deliver"
+            onClick={() => navigate("/elige-ubicacion")}
+            style={{ cursor: "pointer" }}
+          >
             <div className="amazon-deliver-line1">Entregar en</div>
-            <div className="amazon-deliver-line2">📍 México 01000</div>
+            <div className="amazon-deliver-line2">📍 {direccionDisplay}</div>
           </div>
 
           {/* Search Bar */}
@@ -185,14 +200,14 @@ const Home: React.FC = () => {
             <img src={slide} alt={`Slide ${index + 1}`} />
           </div>
         ))}
-        
-        <button 
+
+        <button
           onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
           className="amazon-hero-btn prev"
         >
           ❮
         </button>
-        <button 
+        <button
           onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
           className="amazon-hero-btn next"
         >
@@ -203,10 +218,10 @@ const Home: React.FC = () => {
       {/* Main Content */}
       <div className="amazon-main">
         <div className="amazon-container">
-          
+
           {/* Product Grid */}
           <div className="amazon-grid">
-            
+
             {/* Gaming accessories */}
             <div className="amazon-card">
               <h2>Accesorios Gaming</h2>
