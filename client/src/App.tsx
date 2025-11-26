@@ -10,6 +10,8 @@ import AgregarProducto from './pages/AgregarProducto'
 import EditarProducto from './pages/EditarProducto'
 import Checkout from './pages/Checkout'
 import ProductDetail from './pages/ProductDetail'
+import OrderDetail from './pages/OrderDetail'
+import Pedidos from './pages/Pedidos'
 import logoSvg from './assets/img/Amazon_logo.svg'
 
 export default function App() {
@@ -36,6 +38,8 @@ export default function App() {
         <Route path="/add-product" element={<AgregarProducto />} />
         <Route path="/edit-product/:id" element={<EditarProducto />} />
   <Route path="/product/:id" element={<ProductDetail />} />
+  <Route path="/order/:id" element={<OrderDetail />} />
+  <Route path="/pedidos" element={<Pedidos />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </div>

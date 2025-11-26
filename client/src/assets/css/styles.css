@@ -813,6 +813,20 @@ body {
   margin-top: 8px;
 }
 
+/* Orders tab styles used in HomeVendedor */
+.tab-btn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #f0f0f0;
+  border-color: #ddd;
+  font-weight: 700;
+}
+
 /* Make related product image and name links inherit styles and show underline on hover */
 .related-products .deal-image-wrap a img {
   display: block;

@@ -200,11 +200,37 @@ const Checkout: React.FC = () => {
     setError('')
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
+      // build order payload
+      const userStr = localStorage.getItem('user')
+      const user = userStr ? JSON.parse(userStr) : null
+      const usuarioId = user?.id || user?._id || null
+      const payload = {
+        usuarioId,
+        productos: cartItems.map(ci => ({ productoId: ci.id, cantidad: ci.cantidad, precioUnitario: ci.precio })),
+        direccionEnvio: {
+          nombre: selectedAddress?.nombre,
+          calle: selectedAddress?.direccion,
+          ciudad: selectedAddress?.ciudad,
+          estado: selectedAddress?.estado,
+          codigoPostal: selectedAddress?.codigoPostal,
+          telefono: selectedAddress?.telefono
+        },
+        total: getTotal(),
+        metodoPago: selectedPayment ? `${selectedPayment.tipo}` : 'desconocido'
+      }
+
+      const base = import.meta.env.VITE_API_URL || ''
+      const res = await fetch(`${base}/api/orders`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      })
+      if (!res.ok) throw new Error('Order create failed')
+      const created = await res.json()
+      // clear cart and navigate to order detail
       localStorage.removeItem('cart')
-      alert('✅ ¡Pedido realizado con éxito!')
-      navigate('/')
+      try { window.dispatchEvent(new CustomEvent('cartUpdated')) } catch (e) {}
+      try { window.dispatchEvent(new CustomEvent('showToast', { detail: { message: '✅ Pedido realizado con éxito' } })) } catch (e) {}
+  try { window.dispatchEvent(new CustomEvent('orderCreated', { detail: created })) } catch (e) {}
+      navigate(`/order/${created._id}`)
     } catch (err) {
       console.error('Error:', err)
       setError('Error al procesar el pedido')
