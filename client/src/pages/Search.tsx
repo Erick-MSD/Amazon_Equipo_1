@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import resolveImg from '../utils/resolveImg'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
 import '../assets/css/Search.css'
 
@@ -44,6 +45,8 @@ const Search: React.FC = () => {
   useEffect(() => {
     fetchProducts()
   }, [query, filters])
+
+  const navigate = useNavigate()
 
   const fetchProducts = async () => {
     setLoading(true)
@@ -104,6 +107,7 @@ const Search: React.FC = () => {
     }
     
     localStorage.setItem('cart', JSON.stringify(cart))
+    try { window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { product } })) } catch (e) { }
     alert('✅ Producto agregado al carrito')
   }
 
@@ -201,34 +205,46 @@ const Search: React.FC = () => {
           ) : (
             <div className="results-grid">
               {products.map(product => (
-                <div key={product._id} className="product-item">
-                  <div className="product-img-wrapper">
-                    {product.imagenes?.[0] ? (
-                      <img src={product.imagenes[0]} alt={product.titulo} />
-                    ) : (
-                      <div className="product-img-placeholder">Sin imagen</div>
-                    )}
-                  </div>
-                  <div className="product-details">
-                    <h3 className="product-name">{product.titulo}</h3>
-                    {product.rating && (
-                      <div className="product-stars">
-                        ⭐ {product.rating.toFixed(1)}
-                      </div>
-                    )}
-                    <div className="product-cost">
-                      ${product.precio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
-                    </div>
-                    <div className="product-tag">{product.categoria}</div>
-                    <button 
-                      onClick={() => addToCart(product)}
-                      className="add-to-cart-btn"
+                  <div key={product._id} className="product-item">
+                    <a
+                      href={product._id ? `/product/${product._id}` : '#'}
+                      className="product-link"
+                      onClick={(e) => {
+                        if (!product._id) { e.preventDefault(); return }
+                        e.preventDefault()
+                        try { navigate(`/product/${product._id}`, { state: { product } }) } catch (err) { window.location.href = `/product/${product._id}` }
+                      }}
                     >
-                      Agregar al carrito
-                    </button>
+                      <div className="product-img-wrapper">
+                        {product.imagenes?.[0] ? (
+                          <img src={resolveImg(product.imagenes[0], '')} alt={product.titulo} />
+                        ) : (
+                          <div className="product-img-placeholder">Sin imagen</div>
+                        )}
+                      </div>
+                      <div className="product-details">
+                        <h3 className="product-name">{product.titulo}</h3>
+                        {product.rating && (
+                          <div className="product-stars">
+                            ⭐ {product.rating.toFixed(1)}
+                          </div>
+                        )}
+                        <div className="product-cost">
+                          ${product.precio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                        </div>
+                        <div className="product-tag">{product.categoria}</div>
+                      </div>
+                    </a>
+                    <div className="product-actions">
+                      <button 
+                        onClick={() => addToCart(product)}
+                        className="add-to-cart-btn"
+                      >
+                        Agregar al carrito
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </section>

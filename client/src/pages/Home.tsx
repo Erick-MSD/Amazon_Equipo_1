@@ -1,36 +1,19 @@
 import React, { useState, useEffect } from 'react'
+import resolveImg from '../utils/resolveImg'
 import { Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
 import CartSidebar from '../components/CartSidebar'
+import Header from '../components/Header'
 
 const Home: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [userName, setUserName] = useState<string>('Identifícate')
-  const [searchQuery, setSearchQuery] = useState('')
+  
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [offers, setOffers] = useState<any[]>([])
+  const [loadingOffers, setLoadingOffers] = useState(false)
+  const [offersError, setOffersError] = useState<string | null>(null)
   const navigate = useNavigate()
-
-  // Obtener el nombre del usuario desde localStorage
-  useEffect(() => {
-    const userStr = localStorage.getItem('user')
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr)
-        if (user.nombre) {
-          setUserName(user.nombre)
-        }
-      } catch (err) {
-        console.error('Error parsing user data:', err)
-      }
-    }
-  }, [])
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-    }
-  }
+  
 
   const slides = [
     'https://m.media-amazon.com/images/I/61jovjd+f9L._SX3000_.jpg',
@@ -45,79 +28,35 @@ const Home: React.FC = () => {
     return () => clearInterval(timer)
   }, [])
 
+  // Fetch offers from backend
+  useEffect(() => {
+    const abortCtrl = new AbortController()
+    async function loadOffers() {
+      setLoadingOffers(true)
+      setOffersError(null)
+      try {
+        // Request top 8 offers; the server will filter by active discounts when section=offers
+        const res = await fetch(`/api/products?section=offers&limit=8`, { signal: abortCtrl.signal })
+        if (!res.ok) throw new Error(`Status ${res.status}`)
+        const body = await res.json()
+        setOffers(Array.isArray(body.items) ? body.items : [])
+      } catch (err: any) {
+        if (err.name === 'AbortError') return
+        console.error('Error loading offers', err)
+        setOffersError('No se pudieron cargar las ofertas')
+      } finally {
+        setLoadingOffers(false)
+      }
+    }
+
+    loadOffers()
+    return () => abortCtrl.abort()
+  }, [])
+
   return (
     <div>
       {/* Header */}
-      <div className="amazon-header">
-        {/* Top Header */}
-        <div className="amazon-header-top">
-          {/* Logo */}
-          <Link to="/" className="amazon-logo">
-            <img src={logoSvg} alt="Amazon" />
-            <span className="amazon-logo-com">.com.mx</span>
-          </Link>
-
-          {/* Deliver to */}
-          <div className="amazon-deliver">
-            <div className="amazon-deliver-line1">Entregar en</div>
-            <div className="amazon-deliver-line2">📍 México 01000</div>
-          </div>
-
-          {/* Search Bar */}
-          <form className="amazon-search" onSubmit={handleSearch}>
-            <select>
-              <option>Todos</option>
-              <option>Arte y Manualidades</option>
-              <option>Automóvil</option>
-              <option>Bebé</option>
-              <option>Belleza y Cuidado Personal</option>
-              <option>Libros</option>
-              <option>Computadoras</option>
-              <option>Electrónicos</option>
-            </select>
-            <input 
-              type="text" 
-              placeholder="Buscar en Amazon" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit">🔍</button>
-          </form>
-
-          {/* Language */}
-          <div className="amazon-language">
-            🇲🇽 <span>ES</span>
-          </div>
-
-          {/* Account */}
-          <Link to="/login" className="amazon-account">
-            <div className="amazon-account-line1">Hola, {userName}</div>
-            <div className="amazon-account-line2">Cuenta y Listas</div>
-          </Link>
-
-          {/* Returns & Orders */}
-          <Link to="/orders" className="amazon-account">
-            <div className="amazon-account-line1">Devoluciones</div>
-            <div className="amazon-account-line2">y Pedidos</div>
-          </Link>
-
-          {/* Cart */}
-          <button onClick={() => setIsCartOpen(true)} className="amazon-cart">
-            <div className="amazon-cart-icon">🛒</div>
-            <div className="amazon-cart-text">Carrito</div>
-          </button>
-        </div>
-
-        {/* Navigation Bar */}
-        <div className="amazon-nav">
-          <button>☰ Todos</button>
-          <Link to="/deals">Ofertas del Día</Link>
-          <Link to="/customer-service">Atención al Cliente</Link>
-          <Link to="/registry">Lista de Deseos</Link>
-          <Link to="/gift-cards">Tarjetas Regalo</Link>
-          <Link to="/sell">Vender</Link>
-        </div>
-      </div>
+      <Header onCartOpen={() => setIsCartOpen(true)} />
 
       {/* Hero Carousel */}
       <div className="amazon-hero">
@@ -237,25 +176,41 @@ const Home: React.FC = () => {
           <div className="amazon-deals">
             <h2>Ofertas del Día</h2>
             <div className="amazon-deals-grid">
-              {[
-                { discount: '20', image: 'https://m.media-amazon.com/images/I/61CGHv6kmWL._AC_SY200_.jpg', title: 'Echo Dot (5ª Gen)' },
-                { discount: '15', image: 'https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SY200_.jpg', title: 'Fire TV Stick 4K Max' },
-                { discount: '25', image: 'https://images-na.ssl-images-amazon.com/images/I/61Rw7d7xuGL._AC_SX679_.jpg', title: 'Kindle Paperwhite' },
-                { discount: '30', image: 'https://m.media-amazon.com/images/I/61zAjw4bqPL._AC_SY200_.jpg', title: 'Ring Video Doorbell' },
-                { discount: '18', image: 'https://m.media-amazon.com/images/I/71jG+e7roXL._AC_SY200_.jpg', title: 'Apple AirPods' },
-                { discount: '22', image: 'https://m.media-amazon.com/images/I/81vDZyJQ-4L._AC_SY200_.jpg', title: 'Samsung Galaxy Watch' },
-                { discount: '35', image: 'https://m.media-amazon.com/images/I/71Swqqe7XAL._AC_SY200_.jpg', title: 'Instant Pot Duo' },
-                { discount: '28', image: 'https://images-na.ssl-images-amazon.com/images/I/81FRfhXUoGL._AC_SX679_.jpg', title: 'Ninja Blender' }
-              ].map((deal, i) => (
-                <Link key={i} to={`/product/${i + 1}`} className="amazon-deal-item">
-                  <div className="amazon-deal-badge">
-                    {deal.discount}% dto
-                  </div>
-                  <img src={deal.image} alt={deal.title} />
-                  <div className="amazon-deal-title">Oferta del Día</div>
-                  <div className="amazon-deal-subtitle">{deal.title}</div>
-                </Link>
-              ))}
+              {loadingOffers ? (
+                <div> Cargando ofertas... </div>
+              ) : offersError ? (
+                <div>{offersError}</div>
+              ) : offers.length === 0 ? (
+                <div>No hay ofertas disponibles</div>
+              ) : (
+                offers.map((p, i) => {
+                  const pid = p._id ? (typeof p._id === 'string' ? p._id : String(p._id)) : null
+                  const toPath = pid ? `/product/${pid}` : '#'
+                  return (
+                    <div key={p._id || i} className="amazon-deal-item">
+                      <a href={toPath} className="offer-link" onClick={(e) => {
+                        if (!pid) { e.preventDefault(); return }
+                        e.preventDefault()
+                        try { navigate(toPath, { state: { product: p } }) } catch (err) { window.location.href = toPath }
+                      }}>
+                        <div className="deal-card">
+                          <div className="deal-image-wrap">
+                            <img src={resolveImg((p.imagenes && p.imagenes[0]) || undefined, 'https://via.placeholder.com/150')} alt={p.nombre || 'Producto'} />
+                            {p.descuento?.porcentaje ? (
+                              <div className="amazon-deal-badge">{`${p.descuento.porcentaje}% dto`}</div>
+                            ) : null}
+                          </div>
+
+                          <div className="deal-body">
+                            <div className="amazon-deal-title">Oferta del Día</div>
+                            <div className="amazon-deal-subtitle">{p.nombre}</div>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  )
+                })
+              )}
             </div>
           </div>
 

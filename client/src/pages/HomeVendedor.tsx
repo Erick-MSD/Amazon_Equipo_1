@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
+import resolveImg from '../utils/resolveImg'
 import CartSidebar from '../components/CartSidebar'
 import '../assets/css/styles.css'
 import '../assets/css/style-vendedor.css'
@@ -43,7 +44,18 @@ const HomeVendedor: React.FC = () => {
         const data = await response.json()
 
         // Filtrar solo los productos de este vendedor
-        const vendorProducts = data.items.filter((p: any) => p.vendedorId === vendedorId)
+        const vendorProducts = data.items.filter((p: any) => {
+          // vendedorId puede venir como string, ObjectId o un objeto poblado { _id, nombre }
+          const vid = p?.vendedorId
+          if (!vid) return false
+          if (typeof vid === 'string') return vid === vendedorId
+          if (typeof vid === 'object') {
+            // try _id first
+            const idVal = (vid._id && (typeof vid._id === 'string' ? vid._id : String(vid._id))) || (typeof vid === 'string' ? vid : undefined)
+            return idVal === vendedorId
+          }
+          return String(vid) === vendedorId
+        })
         setProducts(vendorProducts)
       } catch (err) {
         console.error('Error fetching products:', err)
@@ -275,38 +287,50 @@ const HomeVendedor: React.FC = () => {
                     new Date(product.descuento.fechaInicio) <= new Date() && 
                     new Date(product.descuento.fechaFin) >= new Date()
                   
-                  return (
+                    const pid = product._id ? (typeof product._id === 'string' ? product._id : String(product._id)) : null
+                    const toPath = pid ? `/product/${pid}` : '#'
+                    return (
                     <div key={product._id} className="amazon-deal-item" style={{ position: 'relative' }}>
-                      {product.imagenes && product.imagenes[0] && (
-                        <img 
-                          src={`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}${product.imagenes[0]}`}
-                          alt={product.nombre}
-                          style={{ width: '100%', height: '200px', objectFit: 'cover', marginBottom: '10px' }}
-                        />
-                      )}
-                      <div className="amazon-deal-title">{product.nombre}</div>
-                      <div style={{ marginTop: '5px' }}>
-                        {hasActiveDiscount ? (
-                          <>
-                            <span style={{ textDecoration: 'line-through', color: '#888', marginRight: '10px' }}>
-                              ${product.precioOriginal?.toFixed(2)}
-                            </span>
-                            <span style={{ color: '#B12704', fontSize: '1.2em', fontWeight: 'bold' }}>
+                      <a href={toPath} className="seller-product-link" onClick={(e) => {
+                        if (!pid) { e.preventDefault(); return }
+                        e.preventDefault()
+                        try { navigate(toPath, { state: { product } }) } catch (err) { window.location.href = toPath }
+                      }}>
+                        {product.imagenes && product.imagenes[0] && (() => {
+                          const img = product.imagenes[0]
+                          const src = resolveImg(img, `https://via.placeholder.com/300?text=${encodeURIComponent(product.nombre || 'Producto')}`)
+                          return (
+                            <img
+                              src={src}
+                              alt={product.nombre}
+                              style={{ width: '100%', height: '200px', objectFit: 'cover', marginBottom: '10px' }}
+                            />
+                          )
+                        })()}
+                        <div className="amazon-deal-title">{product.nombre}</div>
+                        <div style={{ marginTop: '5px' }}>
+                          {hasActiveDiscount ? (
+                            <>
+                              <span style={{ textDecoration: 'line-through', color: '#888', marginRight: '10px' }}>
+                                ${product.precioOriginal?.toFixed(2)}
+                              </span>
+                              <span style={{ color: '#B12704', fontSize: '1.2em', fontWeight: 'bold' }}>
+                                ${product.precio.toFixed(2)}
+                              </span>
+                              <span style={{ color: '#B12704', marginLeft: '5px', fontSize: '0.9em' }}>
+                                (-{product.descuento.porcentaje}%)
+                              </span>
+                            </>
+                          ) : (
+                            <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
                               ${product.precio.toFixed(2)}
                             </span>
-                            <span style={{ color: '#B12704', marginLeft: '5px', fontSize: '0.9em' }}>
-                              (-{product.descuento.porcentaje}%)
-                            </span>
-                          </>
-                        ) : (
-                          <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
-                            ${product.precio.toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="amazon-deal-subtitle" style={{ marginTop: '5px' }}>
-                        Stock: {product.stock} unidades
-                      </div>
+                          )}
+                        </div>
+                        <div className="amazon-deal-subtitle" style={{ marginTop: '5px' }}>
+                          Stock: {product.stock} unidades
+                        </div>
+                      </a>
                       <button
                         onClick={() => navigate(`/edit-product/${product._id}`)}
                         style={{

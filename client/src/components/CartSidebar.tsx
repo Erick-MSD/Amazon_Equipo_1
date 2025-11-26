@@ -34,6 +34,13 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
     if (isOpen) {
       loadCart()
     }
+    // Also listen to cartUpdated events so sidebar reflects changes in real-time
+    const onCartUpdated = () => loadCart()
+    window.addEventListener('cartUpdated', onCartUpdated)
+
+    return () => {
+      window.removeEventListener('cartUpdated', onCartUpdated)
+    }
   }, [isOpen])
 
   const removeItem = (id: string) => {

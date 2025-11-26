@@ -9,4 +9,14 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
   },
+  // Dev server proxy: redirige llamadas a /api al backend en desarrollo
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })

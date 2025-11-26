@@ -11,15 +11,57 @@ router.get('/', async (req, res) => {
     const limit = Math.max(1, parseInt((req.query.limit as string) || '20', 10))
     const skip = (page - 1) * limit
 
+    // Build filter depending on query params so frontend can request specific sections
+    const filter: any = {}
+
+    // Support: ?section=offers  OR ?discount=true  OR ?ofertas=true
+    const q = (req.query.section as string) || (req.query.discount as string) || (req.query.ofertas as string)
+    if (q === 'offers' || q === 'true') {
+      const now = new Date()
+      // Only products with an active discount and whose discount dates include 'now'
+      filter['descuento.activo'] = true
+      filter['$and'] = [
+        { 'descuento.fechaInicio': { $lte: now } },
+        { 'descuento.fechaFin': { $gte: now } }
+      ]
+    }
+
+    // Support filtering by category: ?categoria=NombreCategoria OR ?category=
+    const categoria = (req.query.categoria as string) || (req.query.category as string)
+    if (categoria) {
+      // Exact match for now; could be enhanced to case-insensitive or partial
+      filter['categoria'] = categoria
+    }
+
     const [items, total] = await Promise.all([
-      Product.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
-      Product.countDocuments()
+      Product.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('vendedorId', 'nombre vendedorInfo.nombreTienda')
+        .lean(),
+      Product.countDocuments(filter)
     ])
 
     res.json({ page, limit, total, items })
   } catch (err) {
     console.error('Error listing products', err)
     res.status(500).json({ message: 'Error listando productos' })
+  }
+})
+
+// GET /api/products/:id
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params
+    const product = await Product.findById(id)
+      .populate('vendedorId', 'nombre vendedorInfo.nombreTienda')
+      .lean()
+    if (!product) return res.status(404).json({ message: 'Producto no encontrado' })
+    res.json(product)
+  } catch (err) {
+    console.error('Error getting product by id', err)
+    res.status(500).json({ message: 'Error obteniendo producto' })
   }
 })
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
 import '../assets/css/AgregarProducto.css'
+import resolveImg from '../utils/resolveImg'
 
 interface ProductData {
   nombre: string
@@ -66,7 +67,18 @@ const EditarProducto: React.FC = () => {
         const userStr = localStorage.getItem('user')
         if (userStr) {
           const user = JSON.parse(userStr)
-          if (foundProduct.vendedorId !== user.id) {
+          const vendedorId = user.id
+          const vid = foundProduct?.vendedorId
+          let productSellerId: string | null = null
+          if (!vid) productSellerId = null
+          else if (typeof vid === 'string') productSellerId = vid
+          else if (typeof vid === 'object') {
+            productSellerId = (vid._id && (typeof vid._id === 'string' ? vid._id : String(vid._id))) || undefined as any
+          }
+
+          // Fallback: compare stringified values
+          const match = productSellerId ? String(productSellerId) === String(vendedorId) : String(vid) === String(vendedorId)
+          if (!match) {
             alert('No tienes permiso para editar este producto')
             navigate('/home-vendedor')
             return
@@ -401,7 +413,7 @@ const EditarProducto: React.FC = () => {
                   <div className="image-preview-grid">
                     {product.imagenes.map((img, index) => (
                       <div key={index} className="image-preview-item">
-                        <img src={`${API_URL}${img}`} alt={`Producto ${index + 1}`} />
+                        <img src={resolveImg(img, `https://via.placeholder.com/300?text=${encodeURIComponent(product.nombre || 'Producto')}`)} alt={`Producto ${index + 1}`} />
                         <button
                           type="button"
                           className="remove-image-btn"
