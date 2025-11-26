@@ -1,9 +1,19 @@
+/* ===========================================
+   ARCHIVO CSS PRINCIPAL - ESTILOS DE AMAZON
+   ===========================================
+   Este archivo contiene todos los estilos globales y específicos
+   para las páginas de Amazon, incluyendo login, home y componentes.
+   Utiliza Tailwind CSS y variables CSS personalizadas.
+*/
+
+/* Directivas de Tailwind CSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Variables CSS globales */
 :root {
-  --bg: #FFFCF8;
+  --bg: #f6f5f2;
   --orange: #FF9900;
   --amazon-blue: #131A22;
   --text: #1f2937;
@@ -23,7 +33,7 @@ body {
   font-family: "Amazon Ember", Arial, sans-serif !important;
   margin: 0;
   padding: 0;
-  background-color: #eaeded !important;
+  background-color: #fff !important;
   color: var(--text);
 }
 
@@ -461,6 +471,9 @@ body {
   text-decoration: none;
   display: flex;
   align-items: center;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .amazon-cart:hover {
@@ -568,7 +581,7 @@ body {
 
 /* Main Content */
 .amazon-main {
-  background-color: #eaeded;
+  background-color: #f6f5f2;
   padding: 20px 0;
   position: relative;
   z-index: 2;
@@ -710,11 +723,30 @@ body {
   padding-bottom: 10px;
 }
 
+/* Ensure offer anchors don't show underline and inherit text color */
+.amazon-deals .offer-link,
+.amazon-deals .offer-link:visited {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.amazon-deals .offer-link:hover,
+.amazon-deals .offer-link:active {
+  text-decoration: none;
+  color: inherit;
+}
+
 .amazon-deal-item {
   text-decoration: none;
   min-width: 150px;
   color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
+
+.amazon-deal-item { cursor: pointer }
 
 .amazon-deal-badge {
   background-color: #cc0c39;
@@ -732,7 +764,137 @@ body {
   height: 150px;
   object-fit: cover;
   border-radius: 4px;
-  margin-bottom: 8px;
+  display: block;
+  margin: 0 0 8px 0;
+}
+
+/* New card styling to look more like Amazon: white card, shadow and hover */
+.deal-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.deal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+/* stronger hover for clickable related/offers cards */
+.amazon-deal-item:hover .deal-card {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+}
+
+.deal-image-wrap {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.amazon-deal-badge {
+  background-color: rgba(204,12,57,0.95);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-radius: 4px;
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: inline-block;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.deal-body {
+  margin-top: 8px;
+  width: 100%;
+}
+
+/* Seller products grid: align product cards in a responsive grid */
+.seller-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  overflow: visible;
+  padding-bottom: 0;
+}
+.seller-products-grid .amazon-deal-item {
+  min-width: unset;
+  text-align: left;
+  align-items: stretch;
+}
+.seller-products-grid .deal-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 12px;
+}
+.seller-products-grid .deal-image-wrap {
+  width: 100%;
+  height: 160px;
+  display: block;
+}
+.seller-products-grid .deal-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+.seller-products-grid .deal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+}
+.seller-products-grid .deal-body .amazon-deal-title {
+  font-size: 14px;
+}
+.seller-products-grid .deal-body button {
+  margin-top: 8px;
+}
+
+/* Make related product image and name links inherit styles and show underline on hover */
+.related-products .deal-image-wrap a img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.related-products .deal-body a {
+  color: inherit;
+  text-decoration: none;
+}
+.related-products .deal-body a:hover {
+  color: #0066c0;
+  text-decoration: underline;
+}
+
+.amazon-deal-title {
+  font-size: 13px;
+  color: #cc0c39;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.amazon-deal-subtitle {
+  font-size: 13px;
+  color: #111;
+  font-weight: 600;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .amazon-deal-title {
@@ -745,6 +907,116 @@ body {
   font-size: 11px;
   color: #565959;
 }
+
+/* Product detail page styles */
+.product-page {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 16px;
+  text-align: left;
+}
+.product-main {
+  display: grid;
+  /* left: carousel, center: main content (wider), right: purchase box (narrower) */
+  grid-template-columns: 560px 1.6fr 220px;
+  gap: 28px;
+  align-items: start;
+}
+.product-left {
+  /* left column reserved for large carousel */
+  display: block;
+}
+.product-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  text-align: left;
+  padding: 6px 12px 6px 0;
+}
+.product-right {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Make the purchase box sticky so it stays visible on scroll */
+.purchase-box {
+  width: 100%;
+  position: sticky;
+  top: 88px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 14px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+.pd-fulfillment { margin-top: 12px; font-size: 13px; color: #222 }
+.pd-fulfillment div { margin-bottom: 6px }
+.product-carousel {
+  position: relative;
+  background: #fff;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.product-carousel img {
+  max-width: 100%;
+  max-height: 560px;
+  object-fit: contain;
+}
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.carousel-btn.prev { left: 8px }
+.carousel-btn.next { right: 8px }
+.product-thumbs { display: flex; gap: 8px; margin-top: 10px }
+.product-thumbs .thumb { border: none; background: transparent; padding: 0; cursor: pointer }
+.product-thumbs .thumb img { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; opacity: 0.7 }
+.product-thumbs .thumb.active img { outline: 2px solid #d2d7db; opacity: 1 }
+.pd-title { font-size: 22px; margin: 0 0 8px; text-align: left }
+.pd-pricing { display: flex; align-items: baseline; gap: 12px; justify-content: flex-start }
+.pd-original { text-decoration: line-through; color: #565959; text-align: left }
+.pd-price { font-size: 28px; color: #b12704; font-weight: 800; text-align: left }
+.pd-short { margin: 12px 0 16px; color: #111 }
+.pd-actions { display: flex; gap: 8px; flex-direction: column }
+.add-to-cart-btn { background: #ffd814; border: 1px solid #f0c14b; padding: 12px 16px; cursor: pointer; border-radius: 6px; width: 100%; font-weight: 700 }
+.buy-now-btn { background: #ffa41c; border: none; padding: 12px 16px; cursor: pointer; border-radius: 6px; color: #fff; width: 100%; font-weight: 700 }
+.important-info { margin-top: 16px; background: #fff; padding: 12px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.06) }
+.product-details { margin-top: 24px }
+
+.seller-link {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 8px;
+}
+.seller-link a { color: #0066c0; text-decoration: none }
+.seller-link a:hover { text-decoration: underline }
+.related-and-reviews { display: flex; gap: 24px; margin-top: 20px }
+.related { flex: 1 }
+.reviews { flex: 1 }
+.review { background: #fff; padding: 12px; margin-bottom: 8px; border-radius: 6px }
+.review-rating { margin-left: 8px; color: #ffa41c }
+
+/* Product detail small helper styles */
+.pd-savings { color: #007600; font-weight: 600; margin-top: 6px }
+.pd-quantity { margin-top: 12px; display: flex; align-items: center; gap: 8px }
+.qty-controls { display: inline-flex; align-items: center; gap: 6px }
+.qty-controls button { width: 28px; height: 28px; border-radius: 4px; border: 1px solid #ddd; background: #fff; cursor: pointer }
+.qty-controls input { width: 48px; text-align: center; border: 1px solid #ddd; border-radius: 4px; padding: 4px }
 
 /* Footer */
 .amazon-footer-top {
@@ -866,4 +1138,286 @@ body {
   .amazon-grid {
     grid-template-columns: 1fr;
   }
+
+  .filters-sidebar {
+    display: none;
+  }
+
+  .search-container {
+    grid-template-columns: 1fr;
+  }
+
+  .results-section {
+    padding: 1rem;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-bar-header {
+    margin: 0 1rem;
+  }
+}
+
+/* ===== SEARCH PAGE STYLES ===== */
+.search-page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+.search-bar-header {
+  flex: 1;
+  max-width: 600px;
+  margin: 0 2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  border: 1px solid #888c8c;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #e77600;
+  box-shadow: 0 0 0 3px rgba(228, 121, 17, 0.15);
+}
+
+.search-main {
+  flex: 1;
+  padding: 1.5rem 1rem;
+}
+
+.search-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+
+/* Sidebar de filtros */
+.filters-sidebar {
+  background: white;
+  padding: 1rem;
+  border-radius: var(--card-radius);
+  border: 1px solid #d5d9d9;
+  height: fit-content;
+  position: sticky;
+  top: 1rem;
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.filters-header h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  color: #0f1111;
+}
+
+.btn-clear-filters {
+  font-size: 0.8125rem;
+  color: #0066c0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.btn-clear-filters:hover {
+  color: #c7511f;
+  text-decoration: underline;
+}
+
+.filter-group {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.filter-group:last-child {
+  border-bottom: none;
+}
+
+.filter-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f1111;
+  margin: 0 0 0.75rem 0;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-checkbox,
+.filter-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #0f1111;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.filter-checkbox:hover,
+.filter-radio:hover {
+  color: #c7511f;
+}
+
+.filter-checkbox input,
+.filter-radio input {
+  cursor: pointer;
+}
+
+/* Sección de resultados */
+.results-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--card-radius);
+  border: 1px solid #d5d9d9;
+}
+
+.results-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.results-title {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #565959;
+  margin: 0;
+}
+
+.search-query {
+  color: #c7511f;
+  font-weight: 600;
+}
+
+.loading-state,
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #565959;
+  font-size: 1rem;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  background: white;
+  border: 1px solid #e7e7e7;
+  border-radius: var(--card-radius);
+  padding: 1rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.product-image {
+  width: 100%;
+  aspect-ratio: 1;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #f8f8f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-image {
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.product-title {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #0f1111;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-rating {
+  font-size: 0.8125rem;
+  color: #007185;
+}
+
+.product-price {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f1111;
+}
+
+.product-category {
+  font-size: 0.75rem;
+  color: #565959;
+  text-transform: capitalize;
+}
+
+/* Small toast notifications */
+.app-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  z-index: 9999;
+  font-size: 14px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.out-of-stock {
+  color: #b91c1c;
+  font-weight: 700;
 }

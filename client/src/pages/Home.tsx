@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import resolveImg from '../utils/resolveImg'
+import { Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
+import CartSidebar from '../components/CartSidebar'
+import Header from '../components/Header'
 
 const Home: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -22,6 +25,13 @@ const Home: React.FC = () => {
     'Aspiradora', 'Plancha', 'Secador', 'Muebles', 'Sofá',
     'Mesa', 'Silla', 'Lámpara', 'Decoración', 'Plantas'
   ]
+  
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [offers, setOffers] = useState<any[]>([])
+  const [loadingOffers, setLoadingOffers] = useState(false)
+  const [offersError, setOffersError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  
 
   const slides = [
     'https://m.media-amazon.com/images/I/61jovjd+f9L._SX3000_.jpg',
@@ -34,6 +44,31 @@ const Home: React.FC = () => {
       setCurrentSlide((prev) => (prev + 1) % slides.length)
     }, 4000)
     return () => clearInterval(timer)
+  }, [])
+
+  // Fetch offers from backend
+  useEffect(() => {
+    const abortCtrl = new AbortController()
+    async function loadOffers() {
+      setLoadingOffers(true)
+      setOffersError(null)
+      try {
+        // Request top 8 offers; the server will filter by active discounts when section=offers
+        const res = await fetch(`/api/products?section=offers&limit=8`, { signal: abortCtrl.signal })
+        if (!res.ok) throw new Error(`Status ${res.status}`)
+        const body = await res.json()
+        setOffers(Array.isArray(body.items) ? body.items : [])
+      } catch (err: any) {
+        if (err.name === 'AbortError') return
+        console.error('Error loading offers', err)
+        setOffersError('No se pudieron cargar las ofertas')
+      } finally {
+        setLoadingOffers(false)
+      }
+    }
+
+    loadOffers()
+    return () => abortCtrl.abort()
   }, [])
 
   return (
@@ -141,6 +176,7 @@ const Home: React.FC = () => {
           <Link to="/sell">Vender</Link>
         </div>
       </div>
+      <Header onCartOpen={() => setIsCartOpen(true)} />
 
       {/* Hero Carousel */}
       <div className="amazon-hero">
@@ -290,6 +326,41 @@ const Home: React.FC = () => {
                   <div className="amazon-deal-subtitle">{deal.title}</div>
                 </Link>
               ))}
+              {loadingOffers ? (
+                <div> Cargando ofertas... </div>
+              ) : offersError ? (
+                <div>{offersError}</div>
+              ) : offers.length === 0 ? (
+                <div>No hay ofertas disponibles</div>
+              ) : (
+                offers.map((p, i) => {
+                  const pid = p._id ? (typeof p._id === 'string' ? p._id : String(p._id)) : null
+                  const toPath = pid ? `/product/${pid}` : '#'
+                  return (
+                    <div key={p._id || i} className="amazon-deal-item">
+                      <a href={toPath} className="offer-link" onClick={(e) => {
+                        if (!pid) { e.preventDefault(); return }
+                        e.preventDefault()
+                        try { navigate(toPath, { state: { product: p } }) } catch (err) { window.location.href = toPath }
+                      }}>
+                        <div className="deal-card">
+                          <div className="deal-image-wrap">
+                            <img src={resolveImg((p.imagenes && p.imagenes[0]) || undefined, 'https://via.placeholder.com/150')} alt={p.nombre || 'Producto'} />
+                            {p.descuento?.porcentaje ? (
+                              <div className="amazon-deal-badge">{`${p.descuento.porcentaje}% dto`}</div>
+                            ) : null}
+                          </div>
+
+                          <div className="deal-body">
+                            <div className="amazon-deal-title">Oferta del Día</div>
+                            <div className="amazon-deal-subtitle">{p.nombre}</div>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  )
+                })
+              )}
             </div>
           </div>
 
@@ -367,6 +438,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* Cart Sidebar */}
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   )
 }

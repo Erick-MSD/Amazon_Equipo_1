@@ -1,57 +1,119 @@
-import { Router } from 'express'
-import { User } from '../models/User'
-import jwt from 'jsonwebtoken'
+import { Router } from 'express';
+import { User } from '../models/User';
+import jwt from 'jsonwebtoken';
 
-const router = Router()
+const router = Router();
 
-// POST /api/auth/register
-router.post('/register', async (req, res) => {
+// ================================
+// Registro Cliente
+// POST /api/auth/registerCliente
+// ================================
+router.post('/RegistroCliente', async (req, res) => {
   try {
-    const { nombre, apellido, email, contraseña, telefono, rol, vendedorInfo } = req.body
-    if (!nombre || !email || !contraseña) {
-      return res.status(400).json({ error: 'nombre, email y contraseña son requeridos' })
+    const { nombre, correo, password, direccion } = req.body;
+
+    if (!nombre || !correo || !password) {
+      return res.status(400).json({ message: 'nombre, correo y password son requeridos' });
     }
 
-    const existing = await User.findOne({ email })
-    if (existing) return res.status(409).json({ error: 'Email ya registrado' })
+    const existing = await User.findOne({ email: correo });
+    if (existing) return res.status(409).json({ message: 'Correo ya registrado' });
 
-    const user = new User({ nombre, apellido, email, contraseña, telefono, rol, vendedorInfo })
-    await user.save()
+    const user = new User({
+      nombre,
+      email: correo,
+      contraseña: password,
+      direccion,
+      rol: 'cliente',
+    });
 
-    // Do not return contraseña
-    const payload = { id: user._id, email: user.email, rol: user.rol }
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '7d' })
+    await user.save();
 
-    res.status(201).json({ user: { id: user._id, nombre: user.nombre, email: user.email, rol: user.rol }, token })
+    const payload = { id: user._id, email: user.email, rol: user.rol };
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '7d' });
+
+    res.status(201).json({ user: { id: user._id, nombre: user.nombre, email: user.email, rol: user.rol }, token });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Register error', err)
-    res.status(500).json({ error: 'Error registering user' })
+    console.error('Error registrando cliente', err);
+    res.status(500).json({ message: 'Error registrando cliente' });
   }
-})
+});
 
+// ================================
+// Registro Vendedor
+// POST /api/auth/registerVendedor
+// ================================
+router.post('/RegistroVendedor', async (req, res) => {
+  try {
+    const { nombre, correo, password, nombreTienda, rfc, tipoProducto, telefono } = req.body;
+
+    if (!nombre || !correo || !password || !nombreTienda) {
+      return res.status(400).json({ message: 'nombre, correo, password y nombreTienda son requeridos' });
+    }
+
+    const existing = await User.findOne({ email: correo });
+    if (existing) return res.status(409).json({ message: 'Correo ya registrado' });
+
+    const user = new User({
+      nombre,
+      email: correo,
+      contraseña: password,
+      rol: 'vendedor',
+      vendedorInfo: { nombreTienda, rfc, tipoProducto, telefono },
+    });
+
+    await user.save();
+
+    const payload = { id: user._id, email: user.email, rol: user.rol };
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '7d' });
+
+    res.status(201).json({ user: { id: user._id, nombre: user.nombre, email: user.email, rol: user.rol }, token });
+  } catch (err) {
+    console.error('Error registrando vendedor', err);
+    res.status(500).json({ message: 'Error registrando vendedor' });
+  }
+});
+
+// ================================
+// Login
 // POST /api/auth/login
+// ================================
 router.post('/login', async (req, res) => {
   try {
-    const { email, contraseña } = req.body
-    if (!email || !contraseña) return res.status(400).json({ error: 'email y contraseña son requeridos' })
+    const { email, contraseña } = req.body;
 
-    const user = await User.findOne({ email })
-    if (!user) return res.status(401).json({ error: 'Credenciales inválidas' })
+    if (!email || !contraseña) {
+      return res.status(400).json({ message: 'Email y contraseña son requeridos' });
+    }
 
-    // @ts-ignore
-    const match = await user.comparePassword(contraseña)
-    if (!match) return res.status(401).json({ error: 'Credenciales inválidas' })
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
 
-    const payload = { id: user._id, email: user.email, rol: user.rol }
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '7d' })
+    const isMatch = await user.comparePassword(contraseña);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+    }
 
-    res.json({ user: { id: user._id, nombre: user.nombre, email: user.email, rol: user.rol }, token })
+    const payload = { id: user._id, email: user.email, rol: user.rol };
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'dev-secret', { expiresIn: '7d' });
+
+    // Retornar info del usuario incluyendo nombre y rol
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        rol: user.rol,
+        nombreTienda: user.rol === 'vendedor' ? user.vendedorInfo?.nombreTienda : undefined
+      }
+    });
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('Login error', err)
-    res.status(500).json({ error: 'Error during login' })
+    console.error('Error en login', err);
+    res.status(500).json({ message: 'Error en el servidor' });
   }
-})
+});
 
-export default router
+export default router;

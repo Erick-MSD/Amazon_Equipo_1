@@ -1,0 +1,104 @@
+/* ===========================================
+   ESTILOS PARA LA PÁGINA DE VENDEDOR
+   =========================================== */
+
+/* -----------------------------------
+   Hero Banner para Vendedores
+   ----------------------------------- */
+
+/* Estilo del hero banner para la página de vendedor */
+.amazon-hero {
+  background: #f6f5f2!important;
+  background-image: none !important;
+}
+
+/* -----------------------------------
+   Paneles de Acceso Rápido
+   ----------------------------------- */
+
+/* Contenedor principal de los paneles de acceso rápido */
+.amazon-quick-access {
+  padding: 40px 0;
+  border-bottom: 1px solid #f6f5f2;
+  margin-bottom: 0;
+}
+
+/* Grid que contiene los paneles individuales */
+.amazon-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Estilo individual de cada panel */
+.amazon-quick-panel {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 20px 20px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+/* Efecto hover para los paneles */
+.amazon-quick-panel:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Estilo de las imágenes dentro de los paneles */
+.amazon-quick-panel img {
+  width: 450px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* Estilo del título de cada panel */
+.amazon-quick-panel h3 {
+  font-size: 25px;
+  font-weight: 700;
+  color: #0f1111;
+  margin-bottom: 10px;
+}
+
+/* Estilo del párrafo descriptivo en cada panel */
+.amazon-quick-panel p {
+  font-size: 14px;
+  color: #565959;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* Estilo del botón en cada panel */
+.amazon-quick-btn {
+  display: inline-block;
+  background-color: #007185;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  border: 1px solid #005a70;
+  transition: background-color 0.3s ease;
+}
+
+/* Efecto hover para el botón */
+.amazon-quick-btn:hover {
+  background-color: #005a70;
+}
+
+/* -----------------------------------
+   Estilos Responsivos
+   ----------------------------------- */
+
+/* Media query para dispositivos móviles */
+@media (max-width: 768px) {
+  .amazon-quick-grid {
+    grid-template-columns: 1fr;
+  }
+}
