@@ -7,6 +7,24 @@ import Header from '../components/Header'
 
 const Home: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [suggestions, setSuggestions] = useState<string[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+
+  const productKeywords = [
+    'iPhone', 'Samsung Galaxy', 'MacBook', 'iPad', 'AirPods',
+    'PlayStation', 'Xbox', 'Nintendo Switch', 'Auriculares',
+    'Teclado mecánico', 'Ratón gaming', 'Monitor', 'Laptop',
+    'Cámara', 'Televisor', 'Tablet', 'Smartwatch', 'Altavoces',
+    'Cargador', 'Cable USB', 'Funda', 'Protector pantalla',
+    'Ropa deportiva', 'Zapatillas', 'Jeans', 'Camiseta',
+    'Vestido', 'Chaqueta', 'Pantalones', 'Zapatos',
+    'Libros', 'Kindle', 'Juguetes', 'Maquillaje', 'Perfume',
+    'Crema facial', 'Champú', 'Vitaminas', 'Suplementos',
+    'Cocina', 'Sartén', 'Cafetera', 'Microondas', 'Refrigerador',
+    'Aspiradora', 'Plancha', 'Secador', 'Muebles', 'Sofá',
+    'Mesa', 'Silla', 'Lámpara', 'Decoración', 'Plantas'
+  ]
   
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [offers, setOffers] = useState<any[]>([])
@@ -56,6 +74,108 @@ const Home: React.FC = () => {
   return (
     <div>
       {/* Header */}
+      <div className="amazon-header">
+        {/* Top Header */}
+        <div className="amazon-header-top">
+          {/* Logo */}
+          <Link to="/" className="amazon-logo">
+            <img src={logoSvg} alt="Amazon" />
+            <span className="amazon-logo-com">.com.mx</span>
+          </Link>
+
+          {/* Deliver to */}
+          <div className="amazon-deliver">
+            <div className="amazon-deliver-line1">Entregar en</div>
+            <div className="amazon-deliver-line2">📍 México 01000</div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="amazon-search">
+            <select>
+              <option>Todos</option>
+              <option>Arte y Manualidades</option>
+              <option>Automóvil</option>
+              <option>Bebé</option>
+              <option>Belleza y Cuidado Personal</option>
+              <option>Libros</option>
+              <option>Computadoras</option>
+              <option>Electrónicos</option>
+            </select>
+            <div className="amazon-search-input-container">
+              <input 
+                type="text" 
+                placeholder="Buscar en Amazon" 
+                value={searchTerm}
+                onChange={(e) => {
+                  const value = e.target.value
+                  setSearchTerm(value)
+                  if (value.length > 0) {
+                    const filtered = productKeywords.filter(keyword => 
+                      keyword.toLowerCase().includes(value.toLowerCase())
+                    ).slice(0, 8)
+                    setSuggestions(filtered)
+                    setShowSuggestions(true)
+                  } else {
+                    setShowSuggestions(false)
+                  }
+                }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                onFocus={() => searchTerm.length > 0 && setShowSuggestions(true)}
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="amazon-search-suggestions">
+                  {suggestions.map((suggestion, index) => (
+                    <div 
+                      key={index} 
+                      className="amazon-search-suggestion"
+                      onClick={() => {
+                        setSearchTerm(suggestion)
+                        setShowSuggestions(false)
+                      }}
+                    >
+                      🔍 {suggestion}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button>🔍</button>
+          </div>
+
+          {/* Language */}
+          <div className="amazon-language">
+            🇲🇽 <span>ES</span>
+          </div>
+
+          {/* Account */}
+          <Link to="/login" className="amazon-account">
+            <div className="amazon-account-line1">Hola, Identifícate</div>
+            <div className="amazon-account-line2">Cuenta y Listas</div>
+          </Link>
+
+          {/* Returns & Orders */}
+          <Link to="/orders" className="amazon-account">
+            <div className="amazon-account-line1">Devoluciones</div>
+            <div className="amazon-account-line2">y Pedidos</div>
+          </Link>
+
+          {/* Cart */}
+          <Link to="/cart" className="amazon-cart">
+            <div className="amazon-cart-icon">🛒</div>
+            <div className="amazon-cart-text">Carrito</div>
+          </Link>
+        </div>
+
+        {/* Navigation Bar */}
+        <div className="amazon-nav">
+          <button>☰ Todos</button>
+          <Link to="/deals">Ofertas del Día</Link>
+          <Link to="/customer-service">Atención al Cliente</Link>
+          <Link to="/registry">Lista de Deseos</Link>
+          <Link to="/gift-cards">Tarjetas Regalo</Link>
+          <Link to="/sell">Vender</Link>
+        </div>
+      </div>
       <Header onCartOpen={() => setIsCartOpen(true)} />
 
       {/* Hero Carousel */}
@@ -91,9 +211,20 @@ const Home: React.FC = () => {
             <div className="amazon-card">
               <h2>Accesorios Gaming</h2>
               <div className="amazon-card-grid">
-                <Link to="/headsets" className="amazon-card-item">
-                  <img src="https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Fuji/2021/June/Fuji_Quad_Headset_1x._SY116_CB667159060_.jpg" alt="Auriculares" />
-                  <div className="amazon-card-item-text">Auriculares</div>
+                <Link to="/echo-dot" className="amazon-card-item">
+                  <img src="https://m.media-amazon.com/images/I/714Rq4k05UL._AC_SL1500_.jpg" alt="Echo Dot" />
+                  <div className="amazon-card-item-text">Echo Dot (5a Gen)</div>
+                  <div className="flex items-center mt-1">
+                    <div className="flex">
+                      {[1,2,3,4,5].map(star => (
+                        <svg key={star} className={`w-3 h-3 ${star <= 4 ? 'text-orange-400' : 'text-gray-300'} fill-current`} viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <span className="text-xs text-blue-600 ml-1">(63,237)</span>
+                  </div>
+                  <div className="text-red-600 font-bold mt-1">$1,299.00</div>
                 </Link>
                 <Link to="/keyboards" className="amazon-card-item">
                   <img src="https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Fuji/2021/June/Fuji_Quad_Keyboard_1x._SY116_CB667159063_.jpg" alt="Teclados" />
@@ -176,6 +307,25 @@ const Home: React.FC = () => {
           <div className="amazon-deals">
             <h2>Ofertas del Día</h2>
             <div className="amazon-deals-grid">
+              {[
+                { discount: '20', image: 'https://m.media-amazon.com/images/I/714Rq4k05UL._AC_SL1500_.jpg', title: 'Echo Dot (5ª Gen)', link: '/echo-dot' },
+                { discount: '15', image: 'https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SY200_.jpg', title: 'Fire TV Stick 4K Max', link: null },
+                { discount: '25', image: 'https://images-na.ssl-images-amazon.com/images/I/61Rw7d7xuGL._AC_SX679_.jpg', title: 'Kindle Paperwhite', link: null },
+                { discount: '30', image: 'https://m.media-amazon.com/images/I/61zAjw4bqPL._AC_SY200_.jpg', title: 'Ring Video Doorbell', link: null },
+                { discount: '18', image: 'https://m.media-amazon.com/images/I/71jG+e7roXL._AC_SY200_.jpg', title: 'Apple AirPods', link: null },
+                { discount: '22', image: 'https://m.media-amazon.com/images/I/81vDZyJQ-4L._AC_SY200_.jpg', title: 'Samsung Galaxy Watch', link: null },
+                { discount: '35', image: 'https://m.media-amazon.com/images/I/71Swqqe7XAL._AC_SY200_.jpg', title: 'Instant Pot Duo', link: null },
+                { discount: '28', image: 'https://images-na.ssl-images-amazon.com/images/I/81FRfhXUoGL._AC_SX679_.jpg', title: 'Ninja Blender', link: null }
+              ].map((deal, i) => (
+                <Link key={i} to={deal.link || `/product/${i + 1}`} className="amazon-deal-item">
+                  <div className="amazon-deal-badge">
+                    {deal.discount}% dto
+                  </div>
+                  <img src={deal.image} alt={deal.title} />
+                  <div className="amazon-deal-title">Oferta del Día</div>
+                  <div className="amazon-deal-subtitle">{deal.title}</div>
+                </Link>
+              ))}
               {loadingOffers ? (
                 <div> Cargando ofertas... </div>
               ) : offersError ? (
