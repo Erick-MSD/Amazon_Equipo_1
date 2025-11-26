@@ -54,7 +54,12 @@ const Login: React.FC = () => {
       if (data.token) localStorage.setItem("token", data.token);
       if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate('/');
+      // Redirigir según el rol del usuario
+      if (data.user?.rol === 'vendedor') {
+        navigate('/home-vendedor');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       console.error(err);
       setError("No se pudo conectar con el servidor. Intenta de nuevo más tarde.");

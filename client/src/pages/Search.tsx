@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import resolveImg from '../utils/resolveImg'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
 import '../assets/css/Search.css'
 
@@ -45,6 +46,8 @@ const Search: React.FC = () => {
     fetchProducts()
   }, [query, filters])
 
+  const navigate = useNavigate()
+
   const fetchProducts = async () => {
     setLoading(true)
     try {
@@ -80,6 +83,32 @@ const Search: React.FC = () => {
 
   const clearFilters = () => {
     setFilters({ categoria: [], precioMin: 0, precioMax: 10000 })
+  }
+
+  const addToCart = (product: Product) => {
+    const cartData = localStorage.getItem('cart')
+    let cart = cartData ? JSON.parse(cartData) : []
+    
+    // Verificar si el producto ya está en el carrito
+    const existingIndex = cart.findIndex((item: any) => item.id === product._id)
+    
+    if (existingIndex >= 0) {
+      // Incrementar cantidad
+      cart[existingIndex].cantidad += 1
+    } else {
+      // Agregar nuevo producto
+      cart.push({
+        id: product._id,
+        nombre: product.titulo,
+        precio: product.precio,
+        cantidad: 1,
+        imagen: product.imagenes?.[0]
+      })
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart))
+    try { window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { product } })) } catch (e) { }
+    alert('✅ Producto agregado al carrito')
   }
 
   return (
@@ -176,28 +205,46 @@ const Search: React.FC = () => {
           ) : (
             <div className="results-grid">
               {products.map(product => (
-                <div key={product._id} className="product-item">
-                  <div className="product-img-wrapper">
-                    {product.imagenes?.[0] ? (
-                      <img src={product.imagenes[0]} alt={product.titulo} />
-                    ) : (
-                      <div className="product-img-placeholder">Sin imagen</div>
-                    )}
-                  </div>
-                  <div className="product-details">
-                    <h3 className="product-name">{product.titulo}</h3>
-                    {product.rating && (
-                      <div className="product-stars">
-                        ⭐ {product.rating.toFixed(1)}
+                  <div key={product._id} className="product-item">
+                    <a
+                      href={product._id ? `/product/${product._id}` : '#'}
+                      className="product-link"
+                      onClick={(e) => {
+                        if (!product._id) { e.preventDefault(); return }
+                        e.preventDefault()
+                        try { navigate(`/product/${product._id}`, { state: { product } }) } catch (err) { window.location.href = `/product/${product._id}` }
+                      }}
+                    >
+                      <div className="product-img-wrapper">
+                        {product.imagenes?.[0] ? (
+                          <img src={resolveImg(product.imagenes[0], '')} alt={product.titulo} />
+                        ) : (
+                          <div className="product-img-placeholder">Sin imagen</div>
+                        )}
                       </div>
-                    )}
-                    <div className="product-cost">
-                      ${product.precio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                      <div className="product-details">
+                        <h3 className="product-name">{product.titulo}</h3>
+                        {product.rating && (
+                          <div className="product-stars">
+                            ⭐ {product.rating.toFixed(1)}
+                          </div>
+                        )}
+                        <div className="product-cost">
+                          ${product.precio.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                        </div>
+                        <div className="product-tag">{product.categoria}</div>
+                      </div>
+                    </a>
+                    <div className="product-actions">
+                      <button 
+                        onClick={() => addToCart(product)}
+                        className="add-to-cart-btn"
+                      >
+                        Agregar al carrito
+                      </button>
                     </div>
-                    <div className="product-tag">{product.categoria}</div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </section>

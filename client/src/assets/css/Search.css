@@ -266,6 +266,24 @@
   text-transform: capitalize;
 }
 
+.add-to-cart-btn {
+  width: 100%;
+  padding: 0.625rem;
+  background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+  border: 1px solid #a88734;
+  border-radius: 4px;
+  color: #111;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+}
+
+.add-to-cart-btn:hover {
+  background: linear-gradient(to bottom, #f5d78e, #e2b33c);
+}
+
 .loading-message,
 .empty-message {
   text-align: center;

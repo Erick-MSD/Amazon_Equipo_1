@@ -4,6 +4,9 @@ import dotenv from 'dotenv'
 import path from 'path'
 import productsRouter from './routes/products'
 import authRouter from './routes/auth'
+import uploadRouter from './routes/upload'
+import reviewsRouter from './routes/reviews'
+import ordersRouter from './routes/orders'
 import { connectDB } from './db'
 import fs from 'fs'
 
@@ -33,6 +36,9 @@ async function start() {
   app.use(cors({ origin: process.env.CORS_ORIGIN || true }))
   app.use(express.json())
 
+  // Servir archivos estáticos de la carpeta uploads
+  app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
+
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok' })
   })
@@ -40,6 +46,12 @@ async function start() {
   app.use('/api/auth', authRouter)
 
   app.use('/api/products', productsRouter)
+
+  app.use('/api', reviewsRouter)
+
+  app.use('/api/orders', ordersRouter)
+
+  app.use('/api/upload', uploadRouter)
 
   app.listen(port, () => {
     // eslint-disable-next-line no-console
