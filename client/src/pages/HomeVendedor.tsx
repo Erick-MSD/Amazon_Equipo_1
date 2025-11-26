@@ -12,6 +12,10 @@ const HomeVendedor: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [orders, setOrders] = useState<any[]>([])
+  const [loadingOrders, setLoadingOrders] = useState<boolean>(true)
+  const [ordersError, setOrdersError] = useState<string | null>(null)
+  const [ordersTab, setOrdersTab] = useState<'pendiente' | 'enviado' | 'all'>('pendiente')
   const navigate = useNavigate()
 
   // Obtener el nombre del vendedor desde localStorage
@@ -66,6 +70,81 @@ const HomeVendedor: React.FC = () => {
 
     fetchProducts()
   }, [])
+
+  // Fetch pending orders for this seller
+  useEffect(() => {
+    let mounted = true
+    const fetchOrders = async () => {
+      setLoadingOrders(true)
+      setOrdersError(null)
+      try {
+        const userStr = localStorage.getItem('user')
+        if (!userStr) {
+          setOrders([])
+          setLoadingOrders(false)
+          return
+        }
+        const user = JSON.parse(userStr)
+        const vendedorId = user.id
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+        const statusParam = ordersTab === 'all' ? '' : `?status=${ordersTab}&limit=50`
+        const url = `${API_URL}/api/orders/seller/${vendedorId}${statusParam}`
+        const res = await fetch(url)
+        if (!res.ok) throw new Error('fetch failed')
+        const body = await res.json()
+        if (!mounted) return
+        setOrders(Array.isArray(body.items) ? body.items : [])
+      } catch (err) {
+        console.error('Error loading orders', err)
+        setOrdersError('No se pudieron cargar los pedidos')
+      } finally {
+        if (mounted) setLoadingOrders(false)
+      }
+    }
+
+    fetchOrders()
+
+    // Polling: refresh every 30s
+    const interval = setInterval(() => fetchOrders(), 30000)
+
+    // Listen for orderCreated events (so seller sees orders immediately in same-browser)
+    const onOrderCreated = (e: any) => {
+      try {
+        const created = e.detail
+        const userStr = localStorage.getItem('user')
+        if (!userStr) return
+        const user = JSON.parse(userStr)
+        const vendedorId = user.id
+        const hasProductForSeller = (created.productos || []).some((it: any) => {
+          const vid = it.productoId?.vendedorId
+          return vid && String(vid) === String(vendedorId)
+        })
+        if (hasProductForSeller) {
+          setOrders(prev => [created, ...prev])
+        }
+      } catch (err) { /* ignore */ }
+    }
+    window.addEventListener('orderCreated', onOrderCreated)
+
+    return () => { mounted = false; clearInterval(interval); window.removeEventListener('orderCreated', onOrderCreated) }
+  }, [ordersTab])
+
+  const markAsShipped = async (orderId: string) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+      const res = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: 'enviado' })
+      })
+      if (!res.ok) throw new Error('update failed')
+      const updated = await res.json()
+      setOrders((prev) => prev.map(o => (o._id === updated._id ? updated : o)))
+    } catch (err) {
+      console.error('Error updating order', err)
+      try { window.dispatchEvent(new CustomEvent('showToast', { detail: { message: 'No se pudo actualizar el pedido' } })) } catch (e) {}
+    }
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -222,20 +301,46 @@ const HomeVendedor: React.FC = () => {
 
             {/* Orders */}
             <div className="amazon-card">
-              <h2>Pedidos Recientes</h2>
-              <div className="amazon-card-grid">
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Pedido #12345 - Enviado</div>
+              <h2>Pedidos</h2>
+              <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className={`tab-btn ${ordersTab === 'pendiente' ? 'active' : ''}`} onClick={() => setOrdersTab('pendiente')}>Pendientes</button>
+                  <button className={`tab-btn ${ordersTab === 'enviado' ? 'active' : ''}`} onClick={() => setOrdersTab('enviado')}>Enviados</button>
+                  <button className={`tab-btn ${ordersTab === 'all' ? 'active' : ''}`} onClick={() => setOrdersTab('all')}>Todos</button>
                 </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Pedido #12346 - Pendiente</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Pedido #12347 - Procesando</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Devoluciones: 1</div>
-                </div>
+              </div>
+              <div style={{ minHeight: 120 }}>
+                {loadingOrders ? (
+                  <p>Cargando pedidos...</p>
+                ) : ordersError ? (
+                  <p>{ordersError}</p>
+                ) : orders.length === 0 ? (
+                  <p>No hay pedidos.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {orders.map((o) => (
+                      <div key={o._id} style={{ border: '1px solid #eee', padding: 10, borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ fontWeight: 700 }}>Pedido #{String(o._id).slice(-6)}</div>
+                          <div style={{ fontSize: 13, color: '#666' }}>
+                            {o.usuarioId?.nombre || o.usuarioId?.correo || 'Cliente anónimo'} • {new Date(o.fechaPedido).toLocaleString('es-MX')}
+                          </div>
+                          <div style={{ marginTop: 6 }}>
+                            {(o.productos || []).map((it: any, idx: number) => (
+                              <span key={idx} style={{ display: 'inline-block', marginRight: 8, fontSize: 13 }}>
+                                {it.productoId?.nombre ? `${it.productoId.nombre} x${it.cantidad}` : `Producto ${String(it.productoId).slice(-4)} x${it.cantidad}`}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button onClick={() => navigate(`/order/${o._id}`)} style={{ padding: '8px 10px' }}>Ver</button>
+                          {o.estado === 'pendiente' && <button onClick={() => markAsShipped(o._id)} style={{ padding: '8px 10px', background: '#10B981', color: '#fff', border: 'none', borderRadius: 4 }}>Marcar como enviado</button>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <Link to="/pedidos" className="amazon-card-link">Ver todos los pedidos</Link>
             </div>
