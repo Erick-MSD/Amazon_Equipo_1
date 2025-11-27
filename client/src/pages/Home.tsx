@@ -8,6 +8,7 @@ import Header from '../components/Header'
 const Home: React.FC = () => {
   const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [userName, setUserName] = useState<string | null>(null)
 
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [offers, setOffers] = useState<any[]>([])
@@ -19,6 +20,21 @@ const Home: React.FC = () => {
     'https://m.media-amazon.com/images/I/71Ie3JXGfVL._SX3000_.jpg',
     'https://m.media-amazon.com/images/I/71U-Q+N7PXL._SX3000_.jpg'
   ]
+
+  // Check if user is logged in
+  useEffect(() => {
+    const userStr = localStorage.getItem('user')
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr)
+        if (user.nombre) {
+          setUserName(user.nombre)
+        }
+      } catch (err) {
+        console.error('Error parsing user data:', err)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -168,16 +184,48 @@ const Home: React.FC = () => {
               <Link to="/home-refresh" className="amazon-card-link">Ver más</Link>
             </div>
 
-            {/* Sign In Card */}
-            <div className="amazon-signin-card">
-              <h2>Inicia sesión para la mejor experiencia</h2>
-              <Link to="/login" className="amazon-signin-btn">
-                Iniciar sesión de forma segura
-              </Link>
-              <div className="amazon-signin-text">
-                ¿Nuevo cliente? <Link to="/register">Empieza aquí.</Link>
+            {/* Sign In Card / Welcome Card */}
+            {userName ? (
+              <div className="amazon-signin-card" style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: '#fff'
+              }}>
+                <h2 style={{ color: '#fff', textShadow: '2px 2px 4px rgba(0,0,0,0.2)' }}>
+                  ¡Bienvenido de nuevo, {userName}! 👋
+                </h2>
+                <p style={{
+                  fontSize: '14px',
+                  margin: '12px 0 16px 0',
+                  opacity: 0.95
+                }}>
+                  Descubre las mejores ofertas y productos especialmente para ti
+                </p>
+                <Link 
+                  to="/mi-cuenta" 
+                  className="amazon-signin-btn"
+                  style={{
+                    background: '#fff',
+                    color: '#667eea',
+                    fontWeight: '700'
+                  }}
+                >
+                  Ver mi cuenta
+                </Link>
+                <div className="amazon-signin-text" style={{ color: '#fff', opacity: 0.9 }}>
+                  <Link to="/" style={{ color: '#fff', textDecoration: 'underline' }}>Explorar productos</Link> | <Link to="/mi-cuenta?tab=wishlist" style={{ color: '#fff', textDecoration: 'underline' }}>Lista de deseos</Link>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="amazon-signin-card">
+                <h2>Inicia sesión para la mejor experiencia</h2>
+                <Link to="/login" className="amazon-signin-btn">
+                  Iniciar sesión de forma segura
+                </Link>
+                <div className="amazon-signin-text">
+                  ¿Nuevo cliente? <Link to="/register">Empieza aquí.</Link>
+                </div>
+              </div>
+            )}
 
           </div>
 

@@ -22,14 +22,8 @@ export default function App() {
     <div className="app-wrapper">
       {/* NAV */}
       <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
-        <Link to="/">Inicio</Link>
-        <Link to="/search">Búsqueda</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/add-product">Agregar Producto</Link>
-        <Link to="/checkout">Carrito</Link>
         <Link to="/notificaciones-vendedor">Notificaciones</Link>
-        <Link to="/estado-envio">Estado Envío</Link>
-        <Link to="/ProductDetail">Producto</Link>
+
       </nav>
 
       {/* RUTAS */}

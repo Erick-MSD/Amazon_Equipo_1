@@ -75,10 +75,11 @@ const Checkout: React.FC = () => {
 
     // Cargar datos del usuario
     const userStr = localStorage.getItem('user')
+    let userData = null
     if (userStr) {
       try {
-        const user = JSON.parse(userStr)
-        setUserName(user.nombre || '')
+        userData = JSON.parse(userStr)
+        setUserName(userData.nombre || '')
       } catch (err) {
         console.error('Error parsing user:', err)
       }
@@ -86,11 +87,51 @@ const Checkout: React.FC = () => {
 
     // Cargar direcciones guardadas
     const savedAddresses = localStorage.getItem('addresses')
+    let addressList: Address[] = []
     if (savedAddresses) {
-      const addressList = JSON.parse(savedAddresses)
+      addressList = JSON.parse(savedAddresses)
       setAddresses(addressList)
       const defaultAddr = addressList.find((a: Address) => a.predeterminada)
       if (defaultAddr) setSelectedAddressId(defaultAddr.id)
+    }
+
+    // Si el usuario está logueado y no hay direcciones guardadas, cargar desde direccion_envio
+    if (userData && addressList.length === 0) {
+      const direccionEnvioStr = localStorage.getItem('direccion_envio')
+      if (direccionEnvioStr) {
+        try {
+          // Parsear la dirección guardada (puede ser string o objeto)
+          let direccionData
+          try {
+            direccionData = JSON.parse(direccionEnvioStr)
+          } catch {
+            // Si es un string simple, crear objeto básico
+            direccionData = { direccion: direccionEnvioStr }
+          }
+
+          // Crear dirección desde los datos guardados
+          const newAddress: Address = {
+            id: 'default-' + Date.now(),
+            nombre: userData.nombre || '',
+            direccion: typeof direccionData === 'string' ? direccionData : (direccionData.direccion || direccionData.calle || ''),
+            ciudad: typeof direccionData === 'object' ? (direccionData.ciudad || '') : '',
+            estado: typeof direccionData === 'object' ? (direccionData.estado || '') : '',
+            codigoPostal: typeof direccionData === 'object' ? (direccionData.codigoPostal || '') : '',
+            telefono: userData.telefono || '',
+            predeterminada: true
+          }
+
+          // Solo agregar si tiene datos válidos
+          if (newAddress.direccion || newAddress.ciudad) {
+            addressList = [newAddress]
+            setAddresses(addressList)
+            setSelectedAddressId(newAddress.id)
+            localStorage.setItem('addresses', JSON.stringify(addressList))
+          }
+        } catch (err) {
+          console.error('Error parsing direccion_envio:', err)
+        }
+      }
     }
 
     // Cargar métodos de pago guardados
@@ -120,8 +161,9 @@ const Checkout: React.FC = () => {
   }
 
   const handleAddAddress = () => {
-    if (!addressFormData.nombre || !addressFormData.direccion || !addressFormData.ciudad) {
-      setError('Completa todos los campos de dirección')
+    if (!addressFormData.nombre || !addressFormData.direccion || !addressFormData.ciudad || 
+        !addressFormData.estado || !addressFormData.codigoPostal || !addressFormData.telefono) {
+      setError('Por favor completa todos los campos requeridos de la dirección')
       return
     }
 
@@ -150,7 +192,13 @@ const Checkout: React.FC = () => {
 
   const handleAddPayment = () => {
     if (!paymentFormData.numeroTarjeta || !paymentFormData.nombreTarjeta || !paymentFormData.expiracion || !paymentFormData.cvv) {
-      setError('Completa todos los campos de pago')
+      setError('Por favor completa todos los campos requeridos del método de pago')
+      return
+    }
+
+    // Validar formato de tarjeta (mínimo 13 dígitos)
+    if (paymentFormData.numeroTarjeta.length < 13) {
+      setError('El número de tarjeta debe tener al menos 13 dígitos')
       return
     }
 

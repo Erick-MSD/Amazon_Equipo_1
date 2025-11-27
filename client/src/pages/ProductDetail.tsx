@@ -219,6 +219,20 @@ const ProductDetail: React.FC = () => {
   // Combinar reseñas mock con reseñas reales
   const allReviews = [...realReviews, ...mockReviews]
 
+  // Calcular rating real basado en todas las reseñas
+  const realRatingData = allReviews.reduce((acc, review) => {
+    const rating = review.calificacion || review.rating || 0
+    if (rating >= 1 && rating <= 5) {
+      acc[rating] = (acc[rating] || 0) + 1
+    }
+    return acc
+  }, { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 })
+
+  const realTotalReviews = allReviews.length
+  const realAverageRating = realTotalReviews > 0 
+    ? (5*realRatingData[5] + 4*realRatingData[4] + 3*realRatingData[3] + 2*realRatingData[2] + 1*realRatingData[1]) / realTotalReviews
+    : averageRating
+
   const reviewsToShow = showAllReviews ? allReviews : allReviews.slice(0, 3)
 
   // Helper to resolve image URLs safely (use absolute URLs as-is; prefix API base for relative paths)
@@ -459,9 +473,42 @@ const ProductDetail: React.FC = () => {
               </div>
 
               <div style={{paddingTop: '16px', borderTop: '1px solid #e7e7e7'}}>
-                <Link to="#" style={{color: '#007185', fontSize: '14px'}}>
+                <button 
+                  onClick={() => {
+                    const userStr = localStorage.getItem('user')
+                    if (!userStr) {
+                      alert('Debes iniciar sesión para agregar a lista de deseos')
+                      navigate('/login')
+                      return
+                    }
+                    
+                    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+                    const exists = wishlist.find((item: any) => item.id === product._id)
+                    
+                    if (exists) {
+                      alert('✅ Este producto ya está en tu lista de deseos')
+                    } else {
+                      wishlist.push({
+                        id: product._id,
+                        nombre: product.nombre,
+                        precio: product.precio,
+                        imagen: product.imagenes?.[0]
+                      })
+                      localStorage.setItem('wishlist', JSON.stringify(wishlist))
+                      alert('✅ Agregado a lista de deseos')
+                    }
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#007185',
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    padding: 0
+                  }}
+                >
                   <i className="bi bi-plus-lg"></i> Agregar a Lista de deseos
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -473,9 +520,9 @@ const ProductDetail: React.FC = () => {
               <div className="rating-summary">
                 <h2 style={{fontSize: '21px', fontWeight: '400', marginBottom: '16px'}}>Reseñas de clientes</h2>
                 <AmazonRatingBreakdown 
-                  ratings={ratingData}
-                  totalReviews={totalReviews}
-                  averageRating={averageRating}
+                  ratings={realRatingData}
+                  totalReviews={realTotalReviews}
+                  averageRating={realAverageRating}
                 />
                 
                 {/* Existing Reviews Below Rating */}

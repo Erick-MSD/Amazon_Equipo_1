@@ -26,7 +26,7 @@ const MiCuenta: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'pedidos' | 'perfil' | 'direcciones'>('pedidos')
+  const [activeTab, setActiveTab] = useState<'pedidos' | 'perfil' | 'direcciones' | 'wishlist'>('pedidos')
   const [editMode, setEditMode] = useState(false)
   const [formData, setFormData] = useState({
     nombre: '',
@@ -175,6 +175,13 @@ const MiCuenta: React.FC = () => {
                 >
                   <i className="bi bi-geo-alt"></i>
                   Mis Direcciones
+                </button>
+                <button
+                  className={`cuenta-nav-item ${activeTab === 'wishlist' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('wishlist')}
+                >
+                  <i className="bi bi-heart"></i>
+                  Lista de Deseos
                 </button>
                 <button
                   className="cuenta-nav-item"
@@ -370,6 +377,61 @@ const MiCuenta: React.FC = () => {
                       <span>Agregar nueva dirección</span>
                     </button>
                   </div>
+                </div>
+              )}
+
+              {activeTab === 'wishlist' && (
+                <div className="cuenta-section">
+                  <h2 className="cuenta-section-titulo">Lista de Deseos</h2>
+                  
+                  {(() => {
+                    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]')
+                    
+                    if (wishlist.length === 0) {
+                      return (
+                        <div className="cuenta-empty">
+                          <i className="bi bi-heart" style={{ fontSize: '48px', color: '#999' }}></i>
+                          <p>Tu lista de deseos está vacía</p>
+                          <Link to="/" className="cuenta-btn-primary">Explorar productos</Link>
+                        </div>
+                      )
+                    }
+                    
+                    return (
+                      <div className="wishlist-grid">
+                        {wishlist.map((item: any, index: number) => (
+                          <div key={index} className="wishlist-card">
+                            <div className="wishlist-image">
+                              {item.imagen ? (
+                                <img src={item.imagen.startsWith('http') ? item.imagen : `http://localhost:4000${item.imagen}`} alt={item.nombre} />
+                              ) : (
+                                <div className="wishlist-no-image">Sin imagen</div>
+                              )}
+                            </div>
+                            <div className="wishlist-info">
+                              <h3 className="wishlist-nombre">{item.nombre}</h3>
+                              <p className="wishlist-precio">${item.precio?.toFixed(2)}</p>
+                              <div className="wishlist-actions">
+                                <Link to={`/product/${item.id}`} className="wishlist-btn-ver">
+                                  Ver producto
+                                </Link>
+                                <button
+                                  className="wishlist-btn-eliminar"
+                                  onClick={() => {
+                                    const updated = wishlist.filter((_: any, i: number) => i !== index)
+                                    localStorage.setItem('wishlist', JSON.stringify(updated))
+                                    window.location.reload()
+                                  }}
+                                >
+                                  <i className="bi bi-trash"></i>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  })()}
                 </div>
               )}
             </main>

@@ -21,8 +21,16 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ productId, onReviewSubmitted })
 
     // Verificar si el usuario está logueado
     try {
-      const user = JSON.parse(localStorage.getItem('user') || 'null')
-      if (!user || !user._id) {
+      const userStr = localStorage.getItem('user')
+      if (!userStr) {
+        setShowLoginPopup(true)
+        return
+      }
+
+      const user = JSON.parse(userStr)
+      const userId = user._id || user.id
+      
+      if (!userId) {
         setShowLoginPopup(true)
         return
       }
@@ -39,7 +47,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ productId, onReviewSubmitted })
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          usuarioId: user._id,
+          usuarioId: userId,
           productoId: productId,
           comentario,
           calificacion

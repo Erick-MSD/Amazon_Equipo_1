@@ -343,31 +343,44 @@ body {
   max-width: 1000px;
   margin: 0 20px;
   display: flex;
+  align-items: stretch;
 }
 
 .amazon-search select {
   background-color: #f3f3f3;
   border: none;
-  padding: 10px 8px;
+  padding: 0 8px;
   border-radius: 4px 0 0 4px;
   font-size: 12px;
-  white-space: nowrap;
   cursor: pointer;
   color: #0F1111;
   min-width: 50px;
+  outline: none;
+}
+
+.amazon-search select:hover {
+  background-color: #e3e6e6;
 }
 
 .amazon-search-input-container {
   flex: 1;
   position: relative;
+  display: flex;
+  align-items: stretch;
 }
 
 .amazon-search input {
   width: 100%;
-  padding: 10px 15px;
+  padding: 8px 12px;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   outline: none;
+  border: 1px solid transparent;
+}
+
+.amazon-search input:focus {
+  border: 2px solid #ff9900;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.2);
 }
 
 .amazon-search-suggestions {
@@ -407,13 +420,14 @@ body {
 .amazon-search button {
   background-color: #febd69;
   border: none;
-  padding: 10px 20px;
+  padding: 0 22px;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
+  color: #0F1111;
   transition: background-color 0.2s;
 }
 
