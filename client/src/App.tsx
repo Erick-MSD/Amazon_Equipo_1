@@ -13,6 +13,8 @@ import ProductDetail from './pages/ProductDetail'
 import OrderDetail from './pages/OrderDetail'
 import Pedidos from './pages/Pedidos'
 import EchoDot from './pages/EchoDot'
+import DashboardVentas from './pages/DashboardVentas'
+import Inventario from './pages/Inventario'
 import logoSvg from './assets/img/Amazon_logo.svg'
 
 export default function App() {
@@ -38,11 +40,12 @@ export default function App() {
         <Route path="/home-vendedor" element={<HomeVendedor />} />
         <Route path="/add-product" element={<AgregarProducto />} />
         <Route path="/edit-product/:id" element={<EditarProducto />} />
-  <Route path="/product/:id" element={<ProductDetail />} />
-  <Route path="/order/:id" element={<OrderDetail />} />
-  <Route path="/pedidos" element={<Pedidos />} />
-        <Route path="/echo-dot" element={<EchoDot />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/order/:id" element={<OrderDetail />} />
+        <Route path="/pedidos" element={<Pedidos />} />
+        <Route path="/echo-dot" element={<EchoDot />} />
+        <Route path="/ventas" element={<DashboardVentas />} />
+        <Route path="/inventario" element={<Inventario />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </div>

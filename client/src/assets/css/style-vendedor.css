@@ -8,8 +8,17 @@
 
 /* Estilo del hero banner para la página de vendedor */
 .amazon-hero {
-  background: #f6f5f2!important;
-  background-image: none !important;
+  display: none !important;
+}
+
+/* Título del hero banner */
+.hero-title {
+  text-align: center;
+}
+
+/* Párrafo del hero banner */
+.hero-paragraph {
+  text-align: center;
 }
 
 /* -----------------------------------
@@ -18,7 +27,8 @@
 
 /* Contenedor principal de los paneles de acceso rápido */
 .amazon-quick-access {
-  padding: 40px 0;
+  padding: 0;
+  background-color: #fff;
   border-bottom: 1px solid #f6f5f2;
   margin-bottom: 0;
 }
@@ -27,19 +37,21 @@
 .amazon-quick-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  gap: 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 /* Estilo individual de cada panel */
 .amazon-quick-panel {
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: white;
+  border: 1px solid #f0f0f0;
   border-radius: 8px;
   padding: 20px;
-  text-align: center;
-  box-shadow: 0 20px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   transition: box-shadow 0.3s ease;
 }
 
@@ -50,8 +62,8 @@
 
 /* Estilo de las imágenes dentro de los paneles */
 .amazon-quick-panel img {
-  width: 450px;
-  height: 200px;
+  width: 550px;
+  height: 110px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 15px;
@@ -59,37 +71,276 @@
 
 /* Estilo del título de cada panel */
 .amazon-quick-panel h3 {
-  font-size: 25px;
-  font-weight: 700;
-  color: #0f1111;
-  margin-bottom: 10px;
+  margin: 0 0 10px 0;
+  color: #232F3E;
+  font-size: 18px;
 }
 
 /* Estilo del párrafo descriptivo en cada panel */
 .amazon-quick-panel p {
-  font-size: 14px;
-  color: #565959;
-  margin-bottom: 20px;
-  line-height: 1.4;
+  margin: 0 0 20px 0;
+  color: #666;
+  flex-grow: 1;
 }
 
 /* Estilo del botón en cada panel */
 .amazon-quick-btn {
-  display: inline-block;
-  background-color: #007185;
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
+  background-color: #FF9900;
+  color: white;
+  padding: 15px 6px;
+  border-radius: 4px;
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 400;
-  border: 1px solid #005a70;
-  transition: background-color 0.3s ease;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
 }
 
-/* Efecto hover para el botón */
-.amazon-quick-btn:hover {
-  background-color: #005a70;
+/* -----------------------------------
+   Contenido Principal
+   ----------------------------------- */
+
+/* Grid del dashboard */
+.amazon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+  margin-top: 0;
+  border-top: 2px solid #e0e0e0;
+  padding-top: 30px;
+}
+
+/* Tarjeta de pedidos */
+.amazon-card {
+  position: relative;
+}
+
+/* Contenedor de pestañas de pedidos */
+.orders-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Botones de pestañas de pedidos */
+.orders-tab-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Botón activo de pestaña */
+.orders-tab-active {
+  background-color: #FF9900;
+  color: #000;
+}
+
+/* Botón inactivo de pestaña */
+.orders-tab-inactive {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* Contenedor de lista de pedidos */
+.orders-container {
+  min-height: 120px;
+  position: relative;
+}
+
+/* Lista horizontal de pedidos */
+.orders-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 12px;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+}
+
+/* Elemento individual de pedido */
+.order-item {
+  border: 1px solid #eee;
+  padding: 10px;
+  border-radius: 6px;
+  min-width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* ID del pedido */
+.order-id {
+  font-weight: 700;
+}
+
+/* Detalles del pedido */
+.order-details {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Lista de productos en el pedido */
+.order-products {
+  margin-top: 6px;
+}
+
+/* Producto individual en el pedido */
+.order-product {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 13px;
+}
+
+/* Contenedor de botones del pedido */
+.order-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Botón de ver pedido */
+.order-view-button {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* Botón de marcar como enviado */
+.order-ship-button {
+  padding: 6px 12px;
+  background: #10B981;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Tarjeta de acciones rápidas */
+.amazon-signin-card {
+  padding: 30px;
+  text-align: center;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Título de acciones rápidas */
+.quick-actions-title {
+  margin-bottom: 30px;
+  color: #232F3E;
+  font-size: 24px;
+}
+
+/* Contenedor de acciones rápidas */
+.quick-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Botón de agregar producto */
+.add-product-button {
+  background-color: #FF9900;
+  color: #f0f0f0;
+  padding: 10px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  display: inline-block;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  border: 2px solid #FF9900;
+  text-align: center;
+}
+
+/* Insights de rendimiento */
+.amazon-deals {
+  margin-top: 0;
+}
+
+/* Mis Productos - reducir espacio con la sección anterior */
+.mis-productos {
+  margin-top: 0 !important;
+}
+
+/* Texto de carga */
+.loading-text {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Texto sin productos */
+.no-products-text {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Elemento de producto */
+.amazon-deal-item {
+  position: relative;
+}
+
+/* Imagen del producto */
+.product-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+/* Contenedor de precio */
+.product-price {
+  margin-top: 5px;
+}
+
+/* Precio original tachado */
+.original-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-right: 10px;
+}
+
+/* Precio con descuento */
+.discounted-price {
+  color: #B12704;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+/* Porcentaje de descuento */
+.discount-percentage {
+  color: #B12704;
+  margin-left: 5px;
+  font-size: 0.9em;
+}
+
+/* Precio regular */
+.regular-price {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+/* Stock del producto */
+.product-stock {
+  margin-top: 5px;
+}
+
+/* Botón de editar producto */
+.edit-product-button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px;
+  background-color: #f0c14b;
+  border: 1px solid #a88734;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 /* -----------------------------------
@@ -101,4 +352,23 @@
   .amazon-quick-grid {
     grid-template-columns: 1fr;
   }
+}
+/* -----------------------------------
+   Estilos para la página de Inventario y Home Vendedor
+   ----------------------------------- */
+
+.amazon-main {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.amazon-container {
+  padding-top: 20px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+}
+
+.amazon-card h2 {
+  margin-top: 0 !important;
 }

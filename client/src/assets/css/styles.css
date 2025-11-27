@@ -529,8 +529,7 @@ body {
   position: relative;
   height: 400px;
   overflow: hidden;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.1));
-  margin-bottom: -150px;
+  background: transparent;
   z-index: 1;
 }
 
@@ -581,11 +580,10 @@ body {
 
 /* Main Content */
 .amazon-main {
-  background-color: #f6f5f2;
+  background-color: #fff;
   padding: 20px 0;
   position: relative;
   z-index: 2;
-  margin-top: 150px;
 }
 
 .amazon-container {
@@ -599,8 +597,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   margin-bottom: 20px;
-  background: linear-gradient(to bottom, transparent, #eaeded 50px);
-  padding-top: 50px;
+  background: #fff;
 }
 
 .amazon-card {
