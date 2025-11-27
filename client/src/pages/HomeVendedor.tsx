@@ -351,77 +351,33 @@ const HomeVendedor: React.FC = () => {
             </div>
           </div>
 
-          {/* Mis Productos */}
-          <div className="amazon-deals mis-productos">
-            <h2>Mis Productos</h2>
-            {loading ? (
-              <p className="loading-text">Cargando productos...</p>
-            ) : products.length === 0 ? (
-              <p className="no-products-text">
-                No tienes productos. <Link to="/add-product">Agregar tu primer producto</Link>
-              </p>
-            ) : (
-              <div className="amazon-deals-grid">
-                {products.map((product) => {
-                  const hasActiveDiscount = product.descuento?.activo &&
-                    new Date(product.descuento.fechaInicio) <= new Date() &&
-                    new Date(product.descuento.fechaFin) >= new Date()
-
-                    const pid = product._id ? (typeof product._id === 'string' ? product._id : String(product._id)) : null
-                    const toPath = pid ? `/product/${pid}` : '#'
-                    return (
-                    <div key={product._id} className="amazon-deal-item">
-                      <a href={toPath} className="seller-product-link" onClick={(e) => {
-                        if (!pid) { e.preventDefault(); return }
-                        e.preventDefault()
-                        try { navigate(toPath, { state: { product } }) } catch (err) { window.location.href = toPath }
-                      }}>
-                        {product.imagenes && product.imagenes[0] && (() => {
-                          const img = product.imagenes[0]
-                          const src = resolveImg(img, `https://via.placeholder.com/300?text=${encodeURIComponent(product.nombre || 'Producto')}`)
-                          return (
-                            <img
-                              src={src}
-                              alt={product.nombre}
-                              className="product-image"
-                            />
-                          )
-                        })()}
-                        <div className="amazon-deal-title">{product.nombre}</div>
-                        <div className="product-price">
-                          {hasActiveDiscount ? (
-                            <>
-                              <span className="original-price">
-                                ${product.precioOriginal?.toFixed(2)}
-                              </span>
-                              <span className="discounted-price">
-                                ${product.precio.toFixed(2)}
-                              </span>
-                              <span className="discount-percentage">
-                                (-{product.descuento.porcentaje}%)
-                              </span>
-                            </>
-                          ) : (
-                            <span className="regular-price">
-                              ${product.precio.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                        <div className="product-stock">
-                          Stock: {product.stock} unidades
-                        </div>
-                      </a>
-                      <button
-                        onClick={() => navigate(`/edit-product/${product._id}`)}
-                        className="edit-product-button"
-                      >
-                        Editar Producto
-                      </button>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+          {/* Cerrar Sesión */}
+          <div className="amazon-deals">
+            <div style={{ textAlign: 'center', padding: '40px 0' }}>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('user')
+                  localStorage.removeItem('cart')
+                  navigate('/')
+                  window.location.reload()
+                }}
+                style={{
+                  backgroundColor: '#ff4444',
+                  color: 'white',
+                  border: 'none',
+                  padding: '15px 40px',
+                  fontSize: '16px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#cc0000'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ff4444'}
+              >
+                🚪 Cerrar Sesión
+              </button>
+            </div>
           </div>
 
         </div>

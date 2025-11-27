@@ -5,7 +5,6 @@ import App from './App'
 import './assets/css/styles.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import Toast from './components/Toast'
-import './styles/echodot.css'
 
 const container = document.getElementById('root')!
 createRoot(container).render(
