@@ -22,11 +22,6 @@ import logoSvg from './assets/img/Amazon_logo.svg'
 export default function App() {
   return (
     <div className="app-wrapper">
-      {/* NAV */}
-      <nav style={{ display: "flex", gap: "20px", padding: "10px" }}>
-        <Link to="/notificaciones-vendedor">Notificaciones</Link>
-
-      </nav>
 
       {/* RUTAS */}
       <Routes>

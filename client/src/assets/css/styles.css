@@ -546,8 +546,9 @@ body {
   position: relative;
   height: 400px;
   overflow: hidden;
-  background: transparent;
+  background: #232f3e;
   z-index: 1;
+  margin-bottom: 20px;
 }
 
 .amazon-slide {
@@ -558,16 +559,19 @@ body {
   height: 100%;
   opacity: 0;
   transition: opacity 1s ease-in-out;
+  z-index: 1;
 }
 
 .amazon-slide.active {
   opacity: 1;
+  z-index: 2;
 }
 
 .amazon-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .amazon-hero-btn {
@@ -581,6 +585,7 @@ body {
   font-size: 18px;
   cursor: pointer;
   z-index: 10;
+  transition: background-color 0.2s;
 }
 
 .amazon-hero-btn:hover {

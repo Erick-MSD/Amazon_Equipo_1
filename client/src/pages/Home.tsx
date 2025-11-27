@@ -73,22 +73,50 @@ const Home: React.FC = () => {
       <Header onCartOpen={() => setIsCartOpen(true)} />
 
       {/* Hero Carousel */}
-      <div className="amazon-hero">
+      <div className="amazon-hero" style={{ minHeight: '400px', background: '#232f3e' }}>
         {slides.map((slide, index) => (
-          <div key={index} className={`amazon-slide ${index === currentSlide ? 'active' : ''}`}>
-            <img src={slide} alt={`Slide ${index + 1}`} />
+          <div 
+            key={index} 
+            className={`amazon-slide ${index === currentSlide ? 'active' : ''}`}
+            style={{ 
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              opacity: index === currentSlide ? 1 : 0,
+              transition: 'opacity 1s ease-in-out'
+            }}
+          >
+            <img 
+              src={slide} 
+              alt={`Slide ${index + 1}`}
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover',
+                display: 'block'
+              }}
+              onError={(e) => {
+                console.error('Error loading image:', slide)
+                e.currentTarget.style.display = 'none'
+              }}
+              onLoad={() => console.log('Image loaded:', slide)}
+            />
           </div>
         ))}
 
         <button
           onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
           className="amazon-hero-btn prev"
+          style={{ zIndex: 100 }}
         >
           ❮
         </button>
         <button
           onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
           className="amazon-hero-btn next"
+          style={{ zIndex: 100 }}
         >
           ❯
         </button>
