@@ -226,11 +226,13 @@ const HomeVendedor: React.FC = () => {
       {/* Hero Banner for Sellers */}
       <div className="amazon-hero">
         <div className="amazon-hero-banner">
-          <h1 style={{ textAlign: 'center' }}>Bienvenido al Centro de Vendedores de Amazon</h1>
-          <p style={{ textAlign: 'center' }}></p>
+          <h1 className="hero-title">Bienvenido al Centro de Vendedores de Amazon</h1>
+          <p className="hero-paragraph"></p>
         </div>
-        {/* Quick Access Panels */}
-        <div className="amazon-quick-access">
+      </div>
+
+      {/* Quick Access Panels */}
+      <div className="amazon-quick-access">
         <div className="amazon-container">
           <div className="amazon-quick-grid">
             <div className="amazon-quick-panel">
@@ -249,8 +251,6 @@ const HomeVendedor: React.FC = () => {
         </div>
       </div>
 
-      </div>
-
       
       {/* Main Content */}
       <div className="amazon-main">
@@ -259,87 +259,63 @@ const HomeVendedor: React.FC = () => {
           {/* Dashboard Grid */}
           <div className="amazon-grid">
 
-            {/* Sales Summary */}
-            <div className="amazon-card">
-              <h2>Resumen de Ventas</h2>
-              <div className="amazon-card-grid">
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Ventas Hoy: $1,250</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Unidades Vendidas: 45</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Pedidos Pendientes: 12</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Calificación: 4.8/5</div>
-                </div>
-              </div>
-              <Link to="/ventas" className="amazon-card-link">Ver detalles</Link>
-            </div>
-
-            {/* Inventory Management */}
-            <div className="amazon-card">
-              <h2>Gestión de Inventario</h2>
-              <div className="amazon-card-grid">
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Productos Activos: 120</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Stock Bajo: 5</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Fuera de Stock: 2</div>
-                </div>
-                <div className="amazon-card-item">
-                  <div className="amazon-card-item-text">Alertas: 3</div>
-                </div>
-              </div>
-              <Link to="/inventario" className="amazon-card-link">Gestionar inventario</Link>
-            </div>
-
             {/* Orders */}
             <div className="amazon-card">
               <h2>Pedidos</h2>
-              <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: 8 }}>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button className={`tab-btn ${ordersTab === 'pendiente' ? 'active' : ''}`} onClick={() => setOrdersTab('pendiente')}>Pendientes</button>
-                  <button className={`tab-btn ${ordersTab === 'enviado' ? 'active' : ''}`} onClick={() => setOrdersTab('enviado')}>Enviados</button>
-                  <button className={`tab-btn ${ordersTab === 'all' ? 'active' : ''}`} onClick={() => setOrdersTab('all')}>Todos</button>
-                </div>
+              {/* Tabs for order status */}
+              <div className="orders-tabs">
+                <button
+                  onClick={() => setOrdersTab('pendiente')}
+                  className={`orders-tab-button ${ordersTab === 'pendiente' ? 'orders-tab-active' : 'orders-tab-inactive'}`}
+                >
+                  Pendientes
+                </button>
+                <button
+                  onClick={() => setOrdersTab('enviado')}
+                  className={`orders-tab-button ${ordersTab === 'enviado' ? 'orders-tab-active' : 'orders-tab-inactive'}`}
+                >
+                  Enviados
+                </button>
+                <button
+                  onClick={() => setOrdersTab('all')}
+                  className={`orders-tab-button ${ordersTab === 'all' ? 'orders-tab-active' : 'orders-tab-inactive'}`}
+                >
+                  Todos
+                </button>
               </div>
-              <div style={{ minHeight: 120 }}>
+              <div className="orders-container">
                 {loadingOrders ? (
-                  <p>Cargando pedidos...</p>
+                  <p className="loading-text">Cargando pedidos...</p>
                 ) : ordersError ? (
                   <p>{ordersError}</p>
                 ) : orders.length === 0 ? (
                   <p>No hay pedidos.</p>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {orders.map((o) => (
-                      <div key={o._id} style={{ border: '1px solid #eee', padding: 10, borderRadius: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontWeight: 700 }}>Pedido #{String(o._id).slice(-6)}</div>
-                          <div style={{ fontSize: 13, color: '#666' }}>
-                            {o.usuarioId?.nombre || o.usuarioId?.correo || 'Cliente anónimo'} • {new Date(o.fechaPedido).toLocaleString('es-MX')}
+                  <>
+                    <div className="orders-list">
+                      {orders.map((o) => (
+                        <div key={o._id} className="order-item">
+                          <div>
+                            <div className="order-id">Pedido #{String(o._id).slice(-6)}</div>
+                            <div className="order-details">
+                              {o.usuarioId?.nombre || o.usuarioId?.correo || 'Cliente anónimo'} • {new Date(o.fechaPedido).toLocaleString('es-MX')}
+                            </div>
+                            <div className="order-products">
+                              {(o.productos || []).map((it: any, idx: number) => (
+                                <span key={idx} className="order-product">
+                                  {it.productoId?.nombre ? `${it.productoId.nombre} x${it.cantidad}` : `Producto ${String(it.productoId).slice(-4)} x${it.cantidad}`}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                          <div style={{ marginTop: 6 }}>
-                            {(o.productos || []).map((it: any, idx: number) => (
-                              <span key={idx} style={{ display: 'inline-block', marginRight: 8, fontSize: 13 }}>
-                                {it.productoId?.nombre ? `${it.productoId.nombre} x${it.cantidad}` : `Producto ${String(it.productoId).slice(-4)} x${it.cantidad}`}
-                              </span>
-                            ))}
+                          <div className="order-buttons">
+                            <button onClick={() => navigate(`/order/${o._id}`)} className="order-view-button">Ver</button>
+                            {o.estado === 'pendiente' && <button onClick={() => markAsShipped(o._id)} className="order-ship-button">Marcar como enviado</button>}
                           </div>
                         </div>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                          <button onClick={() => navigate(`/order/${o._id}`)} style={{ padding: '8px 10px' }}>Ver</button>
-                          {o.estado === 'pendiente' && <button onClick={() => markAsShipped(o._id)} style={{ padding: '8px 10px', background: '#10B981', color: '#fff', border: 'none', borderRadius: 4 }}>Marcar como enviado</button>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
               <Link to="/pedidos" className="amazon-card-link">Ver todos los pedidos</Link>
@@ -347,12 +323,11 @@ const HomeVendedor: React.FC = () => {
 
             {/* Quick Actions */}
             <div className="amazon-signin-card">
-              <h2>Acciones Rápidas</h2>
-              <Link to="/add-product" className="amazon-signin-btn">
-                Agregar Producto
-              </Link>
-              <div className="amazon-signin-text">
-                <Link to="/crear-promocion">Crear Promoción</Link> | <Link to="/soporte">Soporte</Link>
+              <h2 className="quick-actions-title">Acciones Rápidas</h2>
+              <div className="quick-actions-container">
+                <Link to="/add-product" className="add-product-button">
+                   Agregar Producto
+                </Link>
               </div>
             </div>
 
@@ -377,25 +352,25 @@ const HomeVendedor: React.FC = () => {
           </div>
 
           {/* Mis Productos */}
-          <div className="amazon-deals" style={{ marginTop: '30px' }}>
+          <div className="amazon-deals mis-productos">
             <h2>Mis Productos</h2>
             {loading ? (
-              <p style={{ textAlign: 'center', padding: '20px' }}>Cargando productos...</p>
+              <p className="loading-text">Cargando productos...</p>
             ) : products.length === 0 ? (
-              <p style={{ textAlign: 'center', padding: '20px' }}>
+              <p className="no-products-text">
                 No tienes productos. <Link to="/add-product">Agregar tu primer producto</Link>
               </p>
             ) : (
               <div className="amazon-deals-grid">
                 {products.map((product) => {
-                  const hasActiveDiscount = product.descuento?.activo && 
-                    new Date(product.descuento.fechaInicio) <= new Date() && 
+                  const hasActiveDiscount = product.descuento?.activo &&
+                    new Date(product.descuento.fechaInicio) <= new Date() &&
                     new Date(product.descuento.fechaFin) >= new Date()
-                  
+
                     const pid = product._id ? (typeof product._id === 'string' ? product._id : String(product._id)) : null
                     const toPath = pid ? `/product/${pid}` : '#'
                     return (
-                    <div key={product._id} className="amazon-deal-item" style={{ position: 'relative' }}>
+                    <div key={product._id} className="amazon-deal-item">
                       <a href={toPath} className="seller-product-link" onClick={(e) => {
                         if (!pid) { e.preventDefault(); return }
                         e.preventDefault()
@@ -408,46 +383,37 @@ const HomeVendedor: React.FC = () => {
                             <img
                               src={src}
                               alt={product.nombre}
-                              style={{ width: '100%', height: '200px', objectFit: 'cover', marginBottom: '10px' }}
+                              className="product-image"
                             />
                           )
                         })()}
                         <div className="amazon-deal-title">{product.nombre}</div>
-                        <div style={{ marginTop: '5px' }}>
+                        <div className="product-price">
                           {hasActiveDiscount ? (
                             <>
-                              <span style={{ textDecoration: 'line-through', color: '#888', marginRight: '10px' }}>
+                              <span className="original-price">
                                 ${product.precioOriginal?.toFixed(2)}
                               </span>
-                              <span style={{ color: '#B12704', fontSize: '1.2em', fontWeight: 'bold' }}>
+                              <span className="discounted-price">
                                 ${product.precio.toFixed(2)}
                               </span>
-                              <span style={{ color: '#B12704', marginLeft: '5px', fontSize: '0.9em' }}>
+                              <span className="discount-percentage">
                                 (-{product.descuento.porcentaje}%)
                               </span>
                             </>
                           ) : (
-                            <span style={{ fontSize: '1.2em', fontWeight: 'bold' }}>
+                            <span className="regular-price">
                               ${product.precio.toFixed(2)}
                             </span>
                           )}
                         </div>
-                        <div className="amazon-deal-subtitle" style={{ marginTop: '5px' }}>
+                        <div className="product-stock">
                           Stock: {product.stock} unidades
                         </div>
                       </a>
                       <button
                         onClick={() => navigate(`/edit-product/${product._id}`)}
-                        style={{
-                          marginTop: '10px',
-                          width: '100%',
-                          padding: '8px',
-                          backgroundColor: '#f0c14b',
-                          border: '1px solid #a88734',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontWeight: 'bold'
-                        }}
+                        className="edit-product-button"
                       >
                         Editar Producto
                       </button>

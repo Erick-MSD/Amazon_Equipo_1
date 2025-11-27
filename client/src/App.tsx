@@ -15,6 +15,9 @@ import Pedidos from './pages/Pedidos'
 import NotificacionesVendedor from './pages/NotificacionesVendedor'
 import EstadoEnvio from './pages/EstadoEnvio'
 import MiCuenta from './pages/MiCuenta'
+import EchoDot from './pages/EchoDot'
+import DashboardVentas from './pages/DashboardVentas'
+import Inventario from './pages/Inventario'
 import logoSvg from './assets/img/Amazon_logo.svg'
 
 export default function App() {
@@ -41,6 +44,9 @@ export default function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/order/:id" element={<OrderDetail />} />
         <Route path="/pedidos" element={<Pedidos />} />
+        <Route path="/echo-dot" element={<EchoDot />} />
+        <Route path="/ventas" element={<DashboardVentas />} />
+        <Route path="/inventario" element={<Inventario />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/notificaciones-vendedor" element={<NotificacionesVendedor />} />
         <Route path="/estado-envio" element={<EstadoEnvio />} />
