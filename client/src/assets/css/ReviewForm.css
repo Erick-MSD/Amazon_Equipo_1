@@ -1,0 +1,209 @@
+.review-form-container {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.review-form .form-group {
+  margin-bottom: 16px;
+}
+
+.review-form label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0F1111;
+}
+
+.review-form select {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #888C8C;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.review-form select:focus {
+  outline: none;
+  border-color: #e77600;
+  box-shadow: 0 0 3px 2px rgba(228, 121, 17, .5);
+}
+
+.review-form textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #888C8C;
+  border-radius: 8px;
+  resize: vertical;
+}
+
+.review-form textarea:focus {
+  outline: none;
+  border-color: #e77600;
+  box-shadow: 0 0 3px 2px rgba(228, 121, 17, .5);
+}
+
+.review-error {
+  background: #FFF4E5;
+  border: 1px solid #F0C14B;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: #C7511F;
+  font-size: 13px;
+}
+
+.submit-review-btn {
+  background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+  border: 1px solid #a88734;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  color: #0F1111;
+  transition: all 0.1s;
+}
+
+.submit-review-btn:hover {
+  background: linear-gradient(to bottom, #f5d78e, #edb933);
+}
+
+.submit-review-btn:active {
+  background: #f0c14b;
+}
+
+.submit-review-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Login Popup Styles */
+.login-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.login-popup {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 450px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F1111;
+}
+
+.close-popup {
+  background: none;
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  color: #565959;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.close-popup:hover {
+  color: #0F1111;
+}
+
+.popup-body {
+  padding: 24px;
+}
+
+.popup-body p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: #0F1111;
+}
+
+.popup-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  background: #fff;
+  border: 1px solid #D5D9D9;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #0F1111;
+  transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #F7FAFA;
+}
+
+.btn-login {
+  background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+  border: 1px solid #a88734;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #0F1111;
+  transition: all 0.1s;
+}
+
+.btn-login:hover {
+  background: linear-gradient(to bottom, #f5d78e, #edb933);
+}
+
+.btn-login:active {
+  background: #f0c14b;
+}

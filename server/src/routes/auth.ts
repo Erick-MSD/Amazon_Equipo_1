@@ -116,4 +116,43 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// ================================
+// Actualizar Perfil de Usuario
+// PATCH /api/auth/profile/:id
+// ================================
+router.patch('/profile/:id', async (req, res) => {
+  try {
+    const { nombre, correo, telefono } = req.body;
+    const userId = req.params.id;
+
+    const updateData: any = {};
+    if (nombre) updateData.nombre = nombre;
+    if (correo) updateData.email = correo;
+    if (telefono !== undefined) updateData.telefono = telefono;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    res.json({ 
+      _id: user._id,
+      id: user._id, 
+      nombre: user.nombre, 
+      correo: user.email,
+      telefono: user.telefono,
+      email: user.email, 
+      rol: user.rol 
+    });
+  } catch (err) {
+    console.error('Error actualizando perfil', err);
+    res.status(500).json({ message: 'Error actualizando perfil' });
+  }
+});
+
 export default router;

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import resolveImg from '../utils/resolveImg'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import logoSvg from '../assets/img/Amazon_logo.svg'
+import Header from '../components/Header'
+import CartSidebar from '../components/CartSidebar'
 import '../assets/css/Search.css'
 
 interface Product {
@@ -27,6 +29,8 @@ const Search: React.FC = () => {
   
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isCartOpen, setIsCartOpen] = useState(false)
   const [filters, setFilters] = useState<Filters>({
     categoria: [],
     precioMin: 0,
@@ -50,6 +54,7 @@ const Search: React.FC = () => {
 
   const fetchProducts = async () => {
     setLoading(true)
+    setError(null)
     try {
       const base = (import.meta as any).env?.VITE_API_URL || 'http://localhost:4000'
       const params = new URLSearchParams()
@@ -58,11 +63,32 @@ const Search: React.FC = () => {
       params.append('precioMin', filters.precioMin.toString())
       params.append('precioMax', filters.precioMax.toString())
 
-      const res = await fetch(`${base}/api/products?${params.toString()}`)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 segundos timeout
+
+      const res = await fetch(`${base}/api/products?${params.toString()}`, {
+        signal: controller.signal
+      })
+      clearTimeout(timeoutId)
+
+      if (!res.ok) {
+        throw new Error(`Error ${res.status}: ${res.statusText}`)
+      }
+
       const data = await res.json()
-      setProducts(data.products || data || [])
-    } catch (err) {
+      const productsList = data.items || data.products || data || []
+      setProducts(productsList)
+      setError(null)
+    } catch (err: any) {
       console.error('Error fetching products:', err)
+      if (err.name === 'AbortError') {
+        setError('La conexión está tardando mucho. Verifica que el backend esté corriendo.')
+      } else if (err.message.includes('Failed to fetch')) {
+        setError('No se pudo conectar al servidor. Asegúrate de que el backend esté corriendo en el puerto 4000.')
+      } else {
+        setError(`Error al cargar productos: ${err.message}`)
+      }
+      setProducts([])
     } finally {
       setLoading(false)
     }
@@ -113,30 +139,7 @@ const Search: React.FC = () => {
 
   return (
     <div className="search-page">
-      {/* Header */}
-      <header className="search-header">
-        <div className="search-header-content">
-          <Link to="/">
-            <img src={logoSvg} alt="Amazon" className="search-logo" />
-          </Link>
-          <div className="search-bar-container">
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              defaultValue={query}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  setSearchParams({ q: e.currentTarget.value })
-                }
-              }}
-              className="search-bar-input"
-            />
-          </div>
-          <nav className="search-nav-links">
-            <Link to="/Login" className="search-nav-link">Iniciar sesión</Link>
-          </nav>
-        </div>
-      </header>
+      <Header onCartOpen={() => setIsCartOpen(true)} />
 
       {/* Contenido principal */}
       <div className="search-content">
@@ -197,10 +200,34 @@ const Search: React.FC = () => {
           </h1>
 
           {loading ? (
-            <div className="loading-message">Cargando productos...</div>
+            <div className="loading-message" style={{textAlign: 'center', padding: '40px', fontSize: '16px', color: '#565959'}}>
+              <div style={{marginBottom: '12px'}}>Cargando productos...</div>
+              <div style={{fontSize: '14px'}}>Esto puede tardar unos segundos</div>
+            </div>
+          ) : error ? (
+            <div className="error-message" style={{textAlign: 'center', padding: '40px', backgroundColor: '#FFF4E5', border: '1px solid #F0C14B', borderRadius: '8px', margin: '20px'}}>
+              <div style={{fontSize: '18px', fontWeight: '700', color: '#C7511F', marginBottom: '12px'}}>⚠️ Error de conexión</div>
+              <div style={{fontSize: '14px', color: '#0F1111', marginBottom: '16px'}}>{error}</div>
+              <button 
+                onClick={fetchProducts}
+                style={{
+                  background: 'linear-gradient(to bottom, #f7dfa5, #f0c14b)',
+                  border: '1px solid #a88734',
+                  borderRadius: '8px',
+                  padding: '10px 20px',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  color: '#0F1111'
+                }}
+              >
+                Reintentar
+              </button>
+            </div>
           ) : products.length === 0 ? (
-            <div className="empty-message">
-              <p>No se encontraron productos</p>
+            <div className="empty-message" style={{textAlign: 'center', padding: '40px'}}>
+              <div style={{fontSize: '24px', marginBottom: '12px'}}>🔍</div>
+              <p style={{fontSize: '18px', fontWeight: '700', marginBottom: '8px'}}>No se encontraron productos</p>
+              <p style={{fontSize: '14px', color: '#565959'}}>Intenta con otros términos de búsqueda o ajusta los filtros</p>
             </div>
           ) : (
             <div className="results-grid">
@@ -261,6 +288,8 @@ const Search: React.FC = () => {
           © 1996-2025, Amazon.com, Inc. or its affiliates
         </div>
       </footer>
+
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   )
 }

@@ -8,31 +8,11 @@ import Header from '../components/Header'
 const Home: React.FC = () => {
   const navigate = useNavigate()
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [suggestions, setSuggestions] = useState<string[]>([])
-  const [showSuggestions, setShowSuggestions] = useState(false)
 
-  const productKeywords = [
-    'iPhone', 'Samsung Galaxy', 'MacBook', 'iPad', 'AirPods',
-    'PlayStation', 'Xbox', 'Nintendo Switch', 'Auriculares',
-    'Teclado mecánico', 'Ratón gaming', 'Monitor', 'Laptop',
-    'Cámara', 'Televisor', 'Tablet', 'Smartwatch', 'Altavoces',
-    'Cargador', 'Cable USB', 'Funda', 'Protector pantalla',
-    'Ropa deportiva', 'Zapatillas', 'Jeans', 'Camiseta',
-    'Vestido', 'Chaqueta', 'Pantalones', 'Zapatos',
-    'Libros', 'Kindle', 'Juguetes', 'Maquillaje', 'Perfume',
-    'Crema facial', 'Champú', 'Vitaminas', 'Suplementos',
-    'Cocina', 'Sartén', 'Cafetera', 'Microondas', 'Refrigerador',
-    'Aspiradora', 'Plancha', 'Secador', 'Muebles', 'Sofá',
-    'Mesa', 'Silla', 'Lámpara', 'Decoración', 'Plantas'
-  ]
-  
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [offers, setOffers] = useState<any[]>([])
   const [loadingOffers, setLoadingOffers] = useState(false)
   const [offersError, setOffersError] = useState<string | null>(null)
-  const navigate = useNavigate()
-  
 
   const slides = [
     'https://m.media-amazon.com/images/I/61jovjd+f9L._SX3000_.jpg',
@@ -40,21 +20,11 @@ const Home: React.FC = () => {
     'https://m.media-amazon.com/images/I/71U-Q+N7PXL._SX3000_.jpg'
   ]
 
-  const [direccionDisplay, setDireccionDisplay] = useState("México 01000")
-
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length)
     }, 4000)
     return () => clearInterval(timer)
-  }, [])
-
-  useEffect(() => {
-    // Leer dirección guardada en localStorage (si existe)
-    const guardada = localStorage.getItem("direccion_envio")
-    if (guardada) {
-      setDireccionDisplay(guardada)
-    }
   }, [])
 
   // Fetch offers from backend
@@ -84,113 +54,6 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
-      <div className="amazon-header">
-        {/* Top Header */}
-        <div className="amazon-header-top">
-          {/* Logo */}
-          <Link to="/" className="amazon-logo">
-            <img src={logoSvg} alt="Amazon" />
-            <span className="amazon-logo-com">.com.mx</span>
-          </Link>
-
-          {/* Deliver to — AHORA CLICKEABLE */}
-          <div
-            className="amazon-deliver"
-            onClick={() => navigate("/elige-ubicacion")}
-            style={{ cursor: "pointer" }}
-          >
-            <div className="amazon-deliver-line1">Entregar en</div>
-            <div className="amazon-deliver-line2">📍 {direccionDisplay}</div>
-          </div>
-
-          {/* Search Bar */}
-          <div className="amazon-search">
-            <select>
-              <option>Todos</option>
-              <option>Arte y Manualidades</option>
-              <option>Automóvil</option>
-              <option>Bebé</option>
-              <option>Belleza y Cuidado Personal</option>
-              <option>Libros</option>
-              <option>Computadoras</option>
-              <option>Electrónicos</option>
-            </select>
-            <div className="amazon-search-input-container">
-              <input 
-                type="text" 
-                placeholder="Buscar en Amazon" 
-                value={searchTerm}
-                onChange={(e) => {
-                  const value = e.target.value
-                  setSearchTerm(value)
-                  if (value.length > 0) {
-                    const filtered = productKeywords.filter(keyword => 
-                      keyword.toLowerCase().includes(value.toLowerCase())
-                    ).slice(0, 8)
-                    setSuggestions(filtered)
-                    setShowSuggestions(true)
-                  } else {
-                    setShowSuggestions(false)
-                  }
-                }}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                onFocus={() => searchTerm.length > 0 && setShowSuggestions(true)}
-              />
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="amazon-search-suggestions">
-                  {suggestions.map((suggestion, index) => (
-                    <div 
-                      key={index} 
-                      className="amazon-search-suggestion"
-                      onClick={() => {
-                        setSearchTerm(suggestion)
-                        setShowSuggestions(false)
-                      }}
-                    >
-                      🔍 {suggestion}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button>🔍</button>
-          </div>
-
-          {/* Language */}
-          <div className="amazon-language">
-            🇲🇽 <span>ES</span>
-          </div>
-
-          {/* Account */}
-          <Link to="/login" className="amazon-account">
-            <div className="amazon-account-line1">Hola, Identifícate</div>
-            <div className="amazon-account-line2">Cuenta y Listas</div>
-          </Link>
-
-          {/* Returns & Orders */}
-          <Link to="/orders" className="amazon-account">
-            <div className="amazon-account-line1">Devoluciones</div>
-            <div className="amazon-account-line2">y Pedidos</div>
-          </Link>
-
-          {/* Cart */}
-          <Link to="/cart" className="amazon-cart">
-            <div className="amazon-cart-icon">🛒</div>
-            <div className="amazon-cart-text">Carrito</div>
-          </Link>
-        </div>
-
-        {/* Navigation Bar */}
-        <div className="amazon-nav">
-          <button>☰ Todos</button>
-          <Link to="/deals">Ofertas del Día</Link>
-          <Link to="/customer-service">Atención al Cliente</Link>
-          <Link to="/registry">Lista de Deseos</Link>
-          <Link to="/gift-cards">Tarjetas Regalo</Link>
-          <Link to="/sell">Vender</Link>
-        </div>
-      </div>
       <Header onCartOpen={() => setIsCartOpen(true)} />
 
       {/* Hero Carousel */}

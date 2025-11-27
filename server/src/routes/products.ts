@@ -14,6 +14,12 @@ router.get('/', async (req, res) => {
     // Build filter depending on query params so frontend can request specific sections
     const filter: any = {}
 
+    // Support search by name: ?q=laptop OR ?nombre=laptop
+    const searchQuery = (req.query.q as string) || (req.query.nombre as string)
+    if (searchQuery) {
+      filter['nombre'] = { $regex: searchQuery, $options: 'i' }
+    }
+
     // Support: ?section=offers  OR ?discount=true  OR ?ofertas=true
     const q = (req.query.section as string) || (req.query.discount as string) || (req.query.ofertas as string)
     if (q === 'offers' || q === 'true') {
@@ -33,6 +39,18 @@ router.get('/', async (req, res) => {
       filter['categoria'] = categoria
     }
 
+    // Support filtering by price: ?precioMin=100&precioMax=500
+    const precioMin = req.query.precioMin ? parseFloat(req.query.precioMin as string) : null
+    const precioMax = req.query.precioMax ? parseFloat(req.query.precioMax as string) : null
+    
+    if (precioMin !== null && precioMax !== null) {
+      filter['precio'] = { $gte: precioMin, $lte: precioMax }
+    } else if (precioMin !== null) {
+      filter['precio'] = { $gte: precioMin }
+    } else if (precioMax !== null) {
+      filter['precio'] = { $lte: precioMax }
+    }
+
     const [items, total] = await Promise.all([
       Product.find(filter)
         .sort({ createdAt: -1 })
@@ -41,12 +59,6 @@ router.get('/', async (req, res) => {
         .populate('vendedorId', 'nombre vendedorInfo.nombreTienda')
         .lean(),
       Product.countDocuments(filter)
-      Product.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Product.countDocuments()
     ])
 
     res.json({ page, limit, total, items })
@@ -67,30 +79,6 @@ router.get('/:id', async (req, res) => {
     res.json(product)
   } catch (err) {
     console.error('Error getting product by id', err)
-    res.status(500).json({ message: 'Error obteniendo producto' })
-  }
-})
-
-
-router.get('/:id', async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id)
-      .populate({
-        path: 'reseñas',
-        populate: {
-          path: 'usuarioId',
-          select: 'nombre apellido'
-        }
-      })
-      .lean()
-
-    if (!product) {
-      return res.status(404).json({ message: 'Producto no encontrado' })
-    }
-
-    res.json(product)
-  } catch (err) {
-    console.error('Error obteniendo producto', err)
     res.status(500).json({ message: 'Error obteniendo producto' })
   }
 })

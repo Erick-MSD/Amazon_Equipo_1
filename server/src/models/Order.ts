@@ -1,4 +1,4 @@
-import { Schema, model, Document, Types } from 'mongoose'
+import { Schema, model, models, Document, Types } from 'mongoose'
 
 export interface IOrderItem {
   productoId: Types.ObjectId
@@ -76,4 +76,4 @@ const OrderSchema = new Schema<IOrder>({
   calificaciones: { type: [RatingSchema], default: [] }
 })
 
-export const Order = model<IOrder>('Order', OrderSchema)
+export const Order = models.Order || model<IOrder>('Order', OrderSchema)
