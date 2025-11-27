@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { Order } from '../models/order'
-import { Notification } from '../models/notification'
+import { Order } from '../models/Order'
+import { Notification } from '../models/Notification'
 
 const router = Router()
 

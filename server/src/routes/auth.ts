@@ -91,6 +91,10 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
+    if (!user.comparePassword) {
+      return res.status(500).json({ message: 'Error de configuración del servidor' });
+    }
+
     const isMatch = await user.comparePassword(contraseña);
     if (!isMatch) {
       return res.status(401).json({ message: 'Credenciales inválidas' });

@@ -17,7 +17,7 @@ export interface IUser extends Document {
   email: string
   contraseña: string
   telefono?: string
-  rol: 'cliente' | 'admin'
+  rol: 'cliente' | 'vendedor' | 'admin'
   fechaRegistro: Date
   direcciones: Address[]
   vendedorInfo?: {
@@ -26,6 +26,7 @@ export interface IUser extends Document {
     logo?: string
     ratingPromedio?: number
   }
+  comparePassword?: (candidatePassword: string) => Promise<boolean>
 }
 
 const AddressSchema = new Schema<Address>({
@@ -73,4 +74,4 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string) 
   return bcrypt.compare(candidatePassword, this.contraseña)
 }
 
-export const User = model<IUser & { comparePassword?: (p: string) => Promise<boolean> }>('User', UserSchema)
+export const User = model<IUser>('User', UserSchema)
